@@ -1,7 +1,7 @@
 # Control
 ```
 {
-    "OUT": "Array.c",
+    "OUT": "../include/SLC/errno.h",
     "VTYPES": ["R32", "R64", "C64", "C128"],
     "RTYPES": ["R32", "R64", "R32", "R64"],
     "ITYPE": "I32"
@@ -25,28 +25,29 @@ All source files and data files are protected by the license term of
 `LICENSE` in the project root directory.
 
 File description
-File: Array.c
-Description: Implementation of Generic array similar to c++ std::vector<T>
+File: errno.h
+Description: error numbers specific to SLC library
 
 Revision history
 Rev.     Date   Author  Description
-00.00.00 231028 YT      Initial creation
+00.00.00 231030 YT      Initial creation
 
 Note:
 Date format: YYMMDD (YY: lower 2 digits of dominical year, 
              MM:month(1..12), DD: day of month (1..31))
 Author: Initials of revision authors
 */
-#define _01BASE_ARRAY_C
-#include "SLC/Array.h"
+#if !defined(_01BASE_ERRNO_H)
+#define _01BASE_ERRNO_H
+#include "SLC/Numbers.h"
 
-SLCPArray_t SLCArray_Init(SLCPArray_t ptr, const SLC4I16_t size)
-{
-    if (!ptr) return ptr;
-    memcpy(ptr->cont.i16, size, sizeof(SLC4I16_t));
-    ptr->data.cvptr = (const void*)(ptr + 1);
-    return ptr;
-}
+typedef SLCi32_t SLCerrno_t;
+#define SLC_ESINGULAR   0x10000 /* matrix is near singular */
+#define SLC_ENOCONV     0x10001 /* not converged within iteration limit */
+#define SLC_EMATSIZE    0x10002 /* Matrix size mismatch */
+#define SLC_EINVAL      0x10003 /* Invalid operation (usually in objective function or Jacobian) */
+#define SLC_EVALMISMATCH    0x10004 /* value mismatch */
+#define SLC_EDIVBY0     0x10005 /* divide by 0 error */
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.
@@ -56,4 +57,5 @@ Generic definitions of base number specific functions, types, etc.
 Foot contains definitions common to all base number types.
 Foot is placed after all generic code are placed.
 ```
+#endif /* _01BASE_ERRNO_H */
 ```
