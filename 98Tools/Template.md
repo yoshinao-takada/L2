@@ -1,7 +1,7 @@
 # Control
 ```
 {
-    "OUT": "../include/SLC/ExIO.h",
+    "OUT": "../include/SLC/Numbers.h",
     "VTYPES": ["R32", "R64", "C64", "C128"],
     "RTYPES": ["R32", "R64", "R32", "R64"],
     "ITYPE": "I32"
@@ -25,59 +25,33 @@ All source files and data files are protected by the license term of
 `LICENSE` in the project root directory.
 
 File description
-File: ExIO.h
-Description: Extended I/O macros
+File: Template.md
+Description: A template file for 'slcpp.js' preprocessor input.
 
 Revision history
 Rev.     Date   Author  Description
-00.00.00 231030 YT      Initial creation
+00.00.00 231104 YT      Initial creation
 
 Note:
 Date format: YYMMDD (YY: lower 2 digits of dominical year, 
              MM:month(1..12), DD: day of month (1..31))
 Author: Initials of revision authors
 */
-#if !defined(_01BASE_EXIO_H)
-#define _01BASE_EXIO_H
+#if !defined(_00BASE_NUMBERS_H)
+#define _00BASE_NUMBERS_H
 #include "SLC/Numbers.h"
+#include "SLC/NumbersCopy.h"
 #include <stdio.h>
-
-// scalar output
-#define SLCR32_PRINT(__out, __x) fprintf(__out, "%f", __x)
-#define SLCR64_PRINT(__out, __x) fprintf(__out, "%f", __x)
-#define SLCC64_PRINT(__out, __x) \
-    fprintf(__out, "%f, %f", crealf(__x), cimagf(__x))
-#define SLCC128_PRINT(__out, __x) \
-    fprintf(__out, "%f, %f", creal(__x), cimag(__x))
-#define SLCNEWLINE(__out) fprintf(__out, "\n")
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.
 ```
-#pragma region <VTYPE>_macros
-/**
-\brief print a raw number array
-\param _out [in] output FILE*
-\param _x [in] the pointer to the head of the number array
-\param _count [in] the element count of the array
-*/
-#define SLC<VTYPE>_PRINTV(_out, _x, _count) \
-    for (SLC<ITYPE>_t _index = 0; _index < _count; _index++) \
-    { \
-        fprintf(_out, (_index == 0) ? "" : ", "); \
-        SLC<VTYPE>_PRINT(_out, _x[_index]); \
-    }
-
-/**
-\brief print newline after SLC<VTYPE>_PRINTV().
-*/
-#define SLC<VTYPE>_PRINTVN(_out, _x, _count) \
-    SLC<VTYPE>_PRINTV(_out, _x, _count); SLCNEWLINE(_out);
-#pragma endregion <VTYPE>_macros
+#pragma region <VTYPE>_functions
+#pragma endregion <VTYPE>_functions
 ```
 # Foot
 Foot contains definitions common to all base number types.
 Foot is placed after all generic code are placed.
 ```
-#endif /* _01BASE_EXIO_H */
+#endif /* _00BASE_NUMBERS_H */
 ```
