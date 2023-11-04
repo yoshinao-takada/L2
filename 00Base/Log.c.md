@@ -61,7 +61,7 @@ SLCLog_Level_t SLCLog_Level = SLCLog_Level_ALL;
 pthread_spinlock_t SLCLog_Lock = 0;
 #endif
 
-void SLCLog_writeHeader(SLCLog_Level_t loglevel)
+void SLCLog_WriteHeader(SLCLog_Level_t loglevel)
 {
     struct timespec ts;
     struct tm tm;
@@ -72,7 +72,7 @@ void SLCLog_writeHeader(SLCLog_Level_t loglevel)
         tm.tm_min, tm.tm_sec, ts.tv_nsec/1000, LogLabels[loglevel >> 1]);
 }
 
-void SLCLog_writeErrHeader(SLC_errno_t err)
+void SLCLog_WriteErrHeader(SLC_errno_t err)
 {
     struct timespec ts;
     struct tm tm;
@@ -88,12 +88,12 @@ void SLCLog_writeErrHeader(SLC_errno_t err)
 Generic definitions of base number specific functions, types, etc.
 ```
 #pragma region <VTYPE>_functions
-void SLCLog<VTYPE>_Err(SLC_errno_t err,
+void SLCLog_<VTYPE>Err(SLC_errno_t err,
     const char* refname, const char* testname, SLC_I32_t index,
     const SLC_<VTYPE>_t* refarray, const SLC_<VTYPE>_t* testarray)
 {
     if ((!SLCLog_Sink) || (0 == (SLCLog_Level & SLCLog_Level_ERR))) return;
-    SLCLog_writeErrHeader(err);
+    SLCLog_WriteErrHeader(err);
     fprintf(SLCLog_Sink, "Number mismatch, %s[%d] = ", refname, index);
     SLC_<VTYPE>PRINT(SLCLog_Sink, refarray[index]);
     fprintf(SLCLog_Sink, ", %s[%d] = ");

@@ -62,8 +62,6 @@ typedef struct
 StopwatchEntry_t, *StopwatchEntry_pt;
 typedef const StopwatchEntry_t *StopwatchEntry_cpt;
 
-#define ENTRY_SIZE  SLC_ALIGN8(sizeof(StopwatchEntry_t))
-
 typedef struct
 {
     StopwatchEntry_pt channels;
@@ -76,6 +74,8 @@ typedef const StopwatchArray_t *StopwatchArray_cpt;
 
 // stopwatch body
 static StopwatchArray_t stopwatch = { NULL, NULL, 0 };
+
+#define ENTRY_SIZE  SLC_ALIGN8(sizeof(StopwatchEntry_t))
 
 SLC_errno_t SLCStopwatch_Init(SLC_I32_t channelCount, SLC_I32_t captionLength)
 {
@@ -112,17 +112,19 @@ SLC_errno_t SLCStopwatch_Init(SLC_I32_t channelCount, SLC_I32_t captionLength)
     while (0);
     if (err)
     {
-        SLC_SAFEFREE(&stopwatch.channels);
-        SLC_SAFEFREE(&stopwatch.captions);
+        SLC_SAFE_FREE(&stopwatch.channels);
+        SLC_SAFE_FREE(&stopwatch.captions);
         stopwatch.channelCount = 0;
     }
     return err;
 }
 
+#undef ENTRY_SIZE
+
 void SLCStopwatch_Destroy()
 {
-    SLC_SAFEFREE(&stopwatch.channels);
-    SLC_SAFEFREE(&stopwatch.captions);
+    SLC_SAFE_FREE(&stopwatch.channels);
+    SLC_SAFE_FREE(&stopwatch.captions);
     stopwatch.channelCount = stopwatch.captionLength = 0;
 }
 

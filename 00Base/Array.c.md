@@ -44,8 +44,8 @@ Author: Initials of revision authors
 SLCArray_pt SLCArray_Init(SLCArray_pt ptr, const SLC_4I16_t size)
 {
     if (!ptr) return ptr;
-    memcpy(ptr->cont.i16, size, sizeof(SLC_4I16_t));
-    ptr->data.cvptr = (const void*)(ptr + 1);
+    memcpy(ptr->Control.I16, size, sizeof(SLC_4I16_t));
+    ptr->Data.Vcpt = (const void*)(ptr + 1);
     return ptr;
 }
 ```

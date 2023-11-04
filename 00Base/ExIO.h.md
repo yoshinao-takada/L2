@@ -62,7 +62,7 @@ Generic definitions of base number specific functions, types, etc.
 \param _count [in] the element count of the array
 */
 #define SLC_<VTYPE>PRINTV(_out, _x, _count) \
-    for (SLC<ITYPE>_t _index = 0; _index < _count; _index++) \
+    for (SLC_<ITYPE>_t _index = 0; _index < _count; _index++) \
     { \
         fprintf(_out, (_index == 0) ? "" : ", "); \
         SLC_<VTYPE>PRINT(_out, _x[_index]); \

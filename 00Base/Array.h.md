@@ -50,10 +50,10 @@ Author: Initials of revision authors
 */
 typedef union
 {
-    SLC_4I16_t   i16;
-    SLC_2I32_t   i32;
-    SLC_I64_t    i64;
-    SLC_8I8_t    i8;
+    SLC_4I16_t   I16;
+    SLC_2I32_t   I32;
+    SLC_I64_t    I64;
+    SLC_8I8_t    I8;
 }
 SLCArray_Control_t;
 
@@ -62,17 +62,17 @@ SLCArray_Control_t;
 */
 typedef union
 {
-    SLC_Void_cpt    cvptr;
-    SLC_Void_pt     ptr;
-    SLC_Void_pt*    pptr;
-    SLC_I8_t*       i8;
-    SLC_I16_t*      i16;
-    SLC_I32_t*      i32;
-    SLC_I64_t*      i64;
-    SLC_R32_t*      r32;
-    SLC_R64_t*      r64;
-    SLC_C64_t*      c64;
-    SLC_C128_t*     c128;
+    SLC_Void_cpt    Vcpt;
+    SLC_Void_pt     Vpt;
+    SLC_Void_pt*    Vppt;
+    SLC_I8_t*       I8;
+    SLC_I16_t*      I16;
+    SLC_I32_t*      I32;
+    SLC_I64_t*      I64;
+    SLC_R32_t*      R32;
+    SLC_R64_t*      R64;
+    SLC_C64_t*      C64;
+    SLC_C128_t*     C128;
 }
 SLCArray_Data_t;
 
@@ -81,11 +81,11 @@ SLCArray_Data_t;
 */
 typedef struct
 {
-    SLCArray_Control_t   cont;
-    SLCArray_Data_t      data;
+    SLCArray_Control_t   Control;
+    SLCArray_Data_t      Data;
 }
 SLCArray_t, *SLCArray_pt;
-typedef const SLCArray_t *SLCCArray_cpt;
+typedef const SLCArray_t *SLCArray_cpt;
 #pragma endregion struct_definition
 ```
 ## Array initializers
@@ -113,22 +113,22 @@ extern
 SLC_I64_t SLCArray_LatestAllocated;
 
 #define SLCArray_ALLOC(_size) SLCArray_Init( \
-    (SLCPArray_t)malloc( \
+    (SLCArray_pt)malloc( \
         SLCArray_LatestAllocated = \
-        SLCALIGN8(SLCPROD4(_size) + sizeof(SLCArray_t))), \
+        SLC_ALIGN8(SLC_PROD4(_size) + sizeof(SLCArray_t))), \
         _size)
 
 #define SLCArray_ALLOCA(_size) SLCArray_Init( \
-    (SLCPArray_t)malloca( \
+    (SLCArray_pt)malloca( \
         SLCArray_LatestAllocated = \
-        SLCALIGN8(SLCPROD4(_size) + sizeof(SLCArray_t))), \
+        SLC_ALIGN8(SLC_PROD4(_size) + sizeof(SLCArray_t))), \
         _size)
 
 /**
 \brief safety wrapper of free() preventing from double free.
 \param _a [in,out] a pointer to an SLCArray_t object.
 */
-#define SLCArray_SAFEFREE(_a)   if (_a) { free(_a); _a = NULL; }
+#define SLCArray_SAFE_FREE(_a)   if (_a) { free(_a); _a = NULL; }
 #pragma endregion array_initializers
 ```
 # Generic

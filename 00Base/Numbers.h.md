@@ -139,75 +139,75 @@ typedef const void*     SLC_16Void_cpt[16];
 ## Elementary math functions
 ```
 #pragma region elementary_math_functions
-#define SLC_R32M_PI         (4.0f * atanf(1.0f))
-#define SLC_R64M_PI         (4.0f * atan(1.0f))
-#define SLC_R32DEG2RAD(_deg) (SLC_R32M_PI * _deg / 180.0f)
-#define SLC_R64DEG2RAD(_deg) (SLC_R64M_PI * _deg / 180.0)
-#define SLC_R32COS(_a)       cosf(_a)
-#define SLC_R64COS(_a)       cos(_a)
-#define SLC_C64COS(_a)       ccosf(_a)
-#define SLC_C128COS(_a)      ccos(_a)
-#define SLC_R32SIN(_a)       sinf(_a)
-#define SLC_R64SIN(_a)       sin(_a)
-#define SLC_C64SIN(_a)       csinf(_a)
-#define SLC_C128SIN(_a)      csin(_a)
-#define SLC_R32TAN(_a)       tanf(_a)
-#define SLC_R64TAN(_a)       tan(_a)
-#define SLC_C64TAN(_a)       ctanf(_a)
-#define SLC_C128TAN(_a)      ctan(_a)
-#define SLC_R32ATAN(_a)      atanf(_a)
-#define SLC_R64ATAN(_a)      atan(_a)
-#define SLC_C64ATAN(_a)      catanf(_a)
-#define SLC_C128ATAN(_a)     catan(_a)
-#define SLC_R32ATAN2(_a, _b) atan2f(_a, _b)
-#define SLC_R64ATAN2(_a, _b) atan2(_a, _b)
-#define SLC_R32SQRT(_a)      sqrtf(_a)
-#define SLC_R64SQRT(_a)      sqrt(_a)
-#define SLC_C64SQRT(_a)      csqrtf(_a)
-#define SLC_C128SQRT(_a)     csqrt(_a)
+#define SLC_R32_M_PI            (4.0f * atanf(1.0f))
+#define SLC_R64_M_PI            (4.0f * atan(1.0f))
+#define SLC_R32_DEG2RAD(_deg)   (SLC_R32M_PI * _deg / 180.0f)
+#define SLC_R64_DEG2RAD(_deg)   (SLC_R64M_PI * _deg / 180.0)
+#define SLC_R32_COS(_a)         cosf(_a)
+#define SLC_R64_COS(_a)         cos(_a)
+#define SLC_C64_COS(_a)         ccosf(_a)
+#define SLC_C128_COS(_a)        ccos(_a)
+#define SLC_R32_SIN(_a)         sinf(_a)
+#define SLC_R64_SIN(_a)         sin(_a)
+#define SLC_C64_SIN(_a)         csinf(_a)
+#define SLC_C128_SIN(_a)        csin(_a)
+#define SLC_R32_TAN(_a)         tanf(_a)
+#define SLC_R64_TAN(_a)         tan(_a)
+#define SLC_C64_TAN(_a)         ctanf(_a)
+#define SLC_C128_TAN(_a)        ctan(_a)
+#define SLC_R32_ATAN(_a)        atanf(_a)
+#define SLC_R64_ATAN(_a)        atan(_a)
+#define SLC_C64_ATAN(_a)        catanf(_a)
+#define SLC_C128_ATAN(_a)       catan(_a)
+#define SLC_R32_ATAN2(_a, _b)   atan2f(_a, _b)
+#define SLC_R64_ATAN2(_a, _b)   atan2(_a, _b)
+#define SLC_R32_SQRT(_a)        sqrtf(_a)
+#define SLC_R64_SQRT(_a)        sqrt(_a)
+#define SLC_C64_SQRT(_a)        csqrtf(_a)
+#define SLC_C128_SQRT(_a)       csqrt(_a)
 #pragma endregion elementary_math_functions
 
 #pragma region number_conversion_functions
-#define SLC_R32MIN(_a, _b)   fminf(_a, _b)
-#define SLC_R64MIN(_a, _b)   fmin(_a, _b)
-#define SLC_R32MAX(_a, _b)   fmaxf(_a, _b)
-#define SLC_R64MAX(_a, _b)   fmax(_a, _b)
-#define SLC_R32FLOOR(_a)     floorf(_a)
-#define SLC_R64FLOOR(_a)     floor(_a)
-#define SLC_R32CEIL(_a)      ceilf(_a)
-#define SLC_R64CEIL(_a)      ceil(_a)
-#define SLC_R32ABS(_a)       fabsf(_a)
-#define SLC_R64ABS(_a)       fabs(_a)
-#define SLC_C64ABS(_a)       cabsf(_a)
-#define SLC_C128ABS(_a)      cabs(_a)
-#define SLC_R32CONJ(_a)      (_a)
-#define SLC_R64CONJ(_a)      (_a)
-#define SLC_C64CONJ(_a)      conjf(_a)
-#define SLC_C128CONJ(_a)     conj(_a)
-#define SLC_R32FROMREAL(_a)  (_a)
-#define SLC_R64FROMREAL(_a)  (_a)
-#define SLC_C64FROMREAL(_a)  CMPLXF(_a, 0.0f)
-#define SLC_C128FROMREAL(_a) CMPLX(_a, 0.0)
+#define SLC_R32_MIN(_a, _b)     fminf(_a, _b)
+#define SLC_R64_MIN(_a, _b)     fmin(_a, _b)
+#define SLC_R32_MAX(_a, _b)     fmaxf(_a, _b)
+#define SLC_R64_MAX(_a, _b)     fmax(_a, _b)
+#define SLC_R32_FLOOR(_a)       floorf(_a)
+#define SLC_R64_FLOOR(_a)       floor(_a)
+#define SLC_R32_CEIL(_a)        ceilf(_a)
+#define SLC_R64_CEIL(_a)        ceil(_a)
+#define SLC_R32_ABS(_a)         fabsf(_a)
+#define SLC_R64_ABS(_a)         fabs(_a)
+#define SLC_C64_ABS(_a)         cabsf(_a)
+#define SLC_C128_ABS(_a)        cabs(_a)
+#define SLC_R32_CONJ(_a)        (_a)
+#define SLC_R64_CONJ(_a)        (_a)
+#define SLC_C64_CONJ(_a)        conjf(_a)
+#define SLC_C128_CONJ(_a)       conj(_a)
+#define SLC_R32_FROMREAL(_a)    (_a)
+#define SLC_R64_FROMREAL(_a)    (_a)
+#define SLC_C64_FROMREAL(_a)    CMPLXF(_a, 0.0f)
+#define SLC_C128_FROMREAL(_a)   CMPLX(_a, 0.0)
 #pragma endregion number_conversion_functions
 
 #pragma region random_number_generator
-#define SLC_R32RAND          \
+#define SLC_R32_RAND         \
         ((SLC_R32_t)(rand()-0.5f*RAND_MAX)/(0.5f*RAND_MAX))
-#define SLC_R64RAND          \
+#define SLC_R64_RAND         \
         ((SLC_R64_t)(rand()-0.5*RAND_MAX)/(0.5*RAND_MAX ))
-#define SLC_C64RAND          CMPLXF(SLC_R32RAND, SLC_R32RAND)
-#define SLC_C128RAND         CMPLX(SLC_R64RAND, SLC_R64RAND)
+#define SLC_C64_RAND         CMPLXF(SLC_R32RAND, SLC_R32RAND)
+#define SLC_C128_RAND        CMPLX(SLC_R64RAND, SLC_R64RAND)
 #define SLC_ALIGN4(_n)       ((0 == (_n & 3)) ? _n : ((_n | 3) + 1))
 #define SLC_ALIGN8(_n)       ((0 == (_n & 7)) ? _n : ((_n | 7) + 1))
 #pragma endregion random_number_generator
 ```
 ## Small array operation
 ```
-#define SLC_ARRAYSIZE(_a)    (sizeof(_a)/sizeof(_a[0]))
-#define SLC_PROD2(_a)        (_a)[0] * (_a)[1]
-#define SLC_PROD3(_a)        (_a)[0] * (_a)[1] * (_a)[2]
-#define SLC_PROD4(_a)        (_a)[0] * (_a)[1] * \
-                            (_a)[2] * (_a)[3]
+#define SLC_ARRAYSIZE(_a)       (sizeof(_a)/sizeof(_a[0]))
+#define SLC_PROD2(_a)           (_a)[0] * (_a)[1]
+#define SLC_PROD3(_a)           (_a)[0] * (_a)[1] * (_a)[2]
+#define SLC_PROD4(_a)           (_a)[0] * (_a)[1] * \
+                                (_a)[2] * (_a)[3]
 #define SLC_COPY2(_dst, _src)   (_dst)[0] = (_src)[0]; \
                                 (_dst)[1] = (_src)[1]
 #define SLC_COPY3(_dst, _src)   (_dst)[0] = (_src)[0]; \
@@ -236,11 +236,55 @@ typedef const void*     SLC_16Void_cpt[16];
 \brief free buffer preventing multiple freeing.
 \param _ppbuffer [in,out] pointer pointer to a buffer
 */
-#define SLC_SAFEFREE(_ppbuffer) if (_ppbuffer && (*_ppbuffer)) \
+#define SLC_SAFE_FREE(_ppbuffer) if (_ppbuffer && (*_ppbuffer)) \
 { \
     free(*_ppbuffer); \
     *_ppbuffer = NULL; \
 }
+```
+## Constant numbers of identity element of math operations
+```
+#define SLC_R32_0       (0.0f)
+#define SLC_R32_1       (1.0f)
+#define SLC_R32_M1      (-1.0f)
+#define SLC_R32_2       (2.0f)
+#define SLC_R64_0       (0.0)
+#define SLC_R64_1       (1.0)
+#define SLC_R64_M1      (-1.0)
+#define SLC_R64_2       (2.0)
+#define SLC_C64_0       CMPLXF(0.0f, 0.0f)
+#define SLC_C64_1       CMPLXF(1.0f, 0.0f)
+#define SLC_C64_M1      CMPLXF(-1.0f, 0.0f)
+#define SLC_C64_I       CMPLXF(0.0f, 1.0f)
+#define SLC_C64_MI      CMPLXF(0.0f, -1.0f)
+#define SLC_C64_2       CMPLXF(2.0f, 0.0f)
+#define SLC_C128_0      CMPLX(0.0, 0.0)
+#define SLC_C128_1      CMPLX(1.0, 0.0)
+#define SLC_C128_M1     CMPLX(-1.0, 0.0)
+#define SLC_C128_I      CMPLX(0.0, 1.0)
+#define SLC_C128_MI     CMPLX(0.0, -1.0)
+#define SLC_C128_2      CMPLX(2.0, 0.0)
+#define SLC_R32_UNITS   { \
+    SLC_R32_0, SLC_R32_1, SLC_R32_M1, SLC_R32_2 }
+#define SLC_R64_UNITS   { \
+    SLC_R64_0, SLC_R64_1, SLC_R64_M1, SLC_R64_2 }
+#define SLC_C64_UNITS   { \
+    SLC_C64_0, SLC_C64_1, SLC_C64_M1, SLC_C64_2, \
+    SLC_C64_I, SLC_C64_MI }
+#define SLC_C128_UNITS   { \
+    SLC_C128_0, SLC_C128_1, SLC_C128_M1, SLC_C128_2, \
+    SLC_C128_I, SLC_C128_MI }
+```
+## Constant numbers of tolerances
+```
+#define SLC_R32_STDTOL  (1.0e-5f)
+#define SLC_R64_STDTOL  (1.0e-10)
+#define SLC_C64_STDTOL  (1.0e-5f)
+#define SLC_C128_STDTOL (1.0e-10)
+#define SLC_R32_BIGTOL  (1.0e-3f)
+#define SLC_R64_BIGTOL  (1.0e-7)
+#define SLC_C64_BIGTOL  (1.0e-3f)
+#define SLC_C128_BIGTOL (1.0e-7)
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.
