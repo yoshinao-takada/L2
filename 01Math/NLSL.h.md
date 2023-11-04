@@ -1,7 +1,7 @@
 # Control
 ```
 {
-    "OUT": "../include/SLC/Numbers.h",
+    "OUT": "../include/SLC/NLSL.h",
     "VTYPES": ["R32", "R64", "C64", "C128"],
     "RTYPES": ["R32", "R64", "R32", "R64"],
     "ITYPE": "I32"

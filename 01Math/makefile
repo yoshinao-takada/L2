@@ -9,95 +9,55 @@ DEBUG_BINDIR = $(BINDIR)/debug
 RELEASE_BINDIR = $(BINDIR)/release
 DEBUG_OBJDIR = $(DEBUG_BINDIR)/o
 RELEASE_OBJDIR = $(RELEASE_BINDIR)/o
-DEBUG_OBJECTS = $(DEBUG_OBJDIR)/Array.o $(DEBUG_OBJDIR)/NumbersCopy.o $(DEBUG_OBJDIR)/Log.o \
-	$(DEBUG_OBJDIR)/Stopwatch.o
-RELEASE_OBJECTS = $(RELEASE_OBJDIR)/Array.o $(RELEASE_OBJDIR)/NumbersCopy.o $(RELEASE_OBJDIR)/Log.o \
-	$(RELEASE_OBJDIR)/Stopwatch.o
-DEBUG_TARGET = $(DEBUG_BINDIR)/01BaseDone
-RELEASE_TARGET = $(RELEASE_BINDIR)/01BaseDone
-HEADERS = $(INCDIR)/SLC/Numbers.h $(INCDIR)/SLC/Array.h $(INCDIR)/SLC/NumbersCopy.h \
-	$(INCDIR)/SLC/Log.h
+DEBUG_OBJECTS = $(DEBUG_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o
+RELEASE_OBJECTS = $(RELEASE_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o
+DEBUG_TARGET = $(DEBUG_BINDIR)/01MathDone
+RELEASE_TARGET = $(RELEASE_BINDIR)/01MathDone
+HEADERS = $(INCDIR)/SLC/MiniBLAS.h $(INCDIR)/SLC/MiniLA.h
 
 .PHONY	:	debug
 .PHONY	:	release
 .PHONY	:	clean_debug
 .PHONY	:	clean_release
 
-debug	:	$(DEBUG_TARGET) $(INCDIR)/SLC/ExIO.h
+debug	:	$(DEBUG_TARGET)
 
 $(DEBUG_TARGET)	:	$(DEBUG_OBJECTS)
 	mkdir -p $(DEBUG_BINDIR)
 	touch $@
 
-$(DEBUG_OBJDIR)/Array.o	:	Array.c $(INCDIR)/SLC/Array.h $(INCDIR)/SLC/Numbers.h
+$(DEBUG_OBJDIR)/MiniBLAS.o	:	MiniBLAS.c $(INCDIR)/SLC/MiniBLAS.h
 	mkdir -p $(DEBUG_OBJDIR)
 	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
-$(DEBUG_OBJDIR)/NumbersCopy.o	:	NumbersCopy.c $(INCDIR)/SLC/NumbersCopy.h $(INCDIR)/SLC/Numbers.h
+$(DEBUG_OBJDIR)/MiniLA.o	:	MiniLA.c $(INCDIR)/SLC/MiniLA.h
 	mkdir -p $(DEBUG_OBJDIR)
 	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
-$(DEBUG_OBJDIR)/Log.o	:	Log.c $(INCDIR)/SLC/Log.h $(INCDIR)/SLC/ExIO.h $(INCDIR)/SLC/Numbers.h $(INCDIR)/SLC/errno.h
-	mkdir -p $(DEBUG_OBJDIR)
-	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
-
-$(DEBUG_OBJDIR)/Stopwatch.o	:	Stopwatch.c $(INCDIR)/SLC/Stopwatch.h $(INCDIR)/SLC/Numbers.h $(INCDIR)/SLC/errno.h
-	mkdir -p $(DEBUG_OBJDIR)
-	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
-
-release	:	$(RELEASE_TARGET) $(INCDIR)/SLC/ExIO.h
+release	:	$(RELEASE_TARGET)
 
 $(RELEASE_TARGET)	:	$(RELEASE_OBJECTS)
 	mkdir -p $(RELEASE_BINDIR)
 	touch $@
 
-$(RELEASE_OBJDIR)/Array.o	:	Array.c $(INCDIR)/SLC/Array.h $(INCDIR)/SLC/Numbers.h
+$(RELEASE_OBJDIR)/MiniBLAS.o	:	MiniBLAS.c $(INCDIR)/SLC/MiniBLAS.h
 	mkdir -p $(RELEASE_OBJDIR)
 	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
 
-$(RELEASE_OBJDIR)/NumbersCopy.o	:	NumbersCopy.c $(INCDIR)/SLC/NumbersCopy.h $(INCDIR)/SLC/Numbers.h
+$(RELEASE_OBJDIR)/MiniLA.o	:	MiniLA.c $(INCDIR)/SLC/MiniLA.h
 	mkdir -p $(RELEASE_OBJDIR)
 	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
 
-$(RELEASE_OBJDIR)/Log.o	:	Log.c $(INCDIR)/SLC/Log.h $(INCDIR)/SLC/ExIO.h $(INCDIR)/SLC/Numbers.h $(INCDIR)/SLC/errno.h
-	mkdir -p $(RELEASE_OBJDIR)
-	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
-
-$(RELEASE_OBJDIR)/Stopwatch.o	:	Stopwatch.c $(INCDIR)/SLC/Stopwatch.h $(INCDIR)/SLC/Numbers.h $(INCDIR)/SLC/errno.h
-	mkdir -p $(RELEASE_OBJDIR)
-	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
-
-Array.c	:	Array.c.md
+MiniBLAS.c	:	MiniBLAS.c.md
 	$(SLCPP) $<
 
-NumbersCopy.c	:	NumbersCopy.c.md
+MiniLA.c	:	MiniLA.c.md
 	$(SLCPP) $<
 
-Log.c	:	Log.c.md
+$(INCDIR)/SLC/MiniBLAS.h	:	MiniBLAS.h.md
 	$(SLCPP) $<
 
-Stopwatch.c	:	Stopwatch.c.md
-	$(SLCPP) $<
-
-$(INCDIR)/SLC/Numbers.h	:	Numbers.h.md
-	$(SLCPP) $<
-
-$(INCDIR)/SLC/Array.h	:	Array.h.md
-	$(SLCPP) $<
-
-$(INCDIR)/SLC/NumbersCopy.h	:	NumbersCopy.h.md
-	$(SLCPP) $<
-
-$(INCDIR)/SLC/ExIO.h	:	ExIO.h.md
-	$(SLCPP) $<
-
-$(INCDIR)/SLC/Log.h	:	Log.h.md
-	$(SLCPP) $<
-
-$(INCDIR)/SLC/Stopwatch.h	:	Stopwatch.h.md
-	$(SLCPP) $<
-
-$(INCDIR)/SLC/errno.h	:	errno.h.md
+$(INCDIR)/SLC/MiniLA.h	:	MiniLA.h.md
 	$(SLCPP) $<
 
 clean_debug	:

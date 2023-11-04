@@ -1,7 +1,7 @@
 # Control
 ```
 {
-    "OUT": "../include/SLC/Numbers.h",
+    "OUT": "../include/SLC/MiniBLAS.h",
     "VTYPES": ["R32", "R64", "C64", "C128"],
     "RTYPES": ["R32", "R64", "R32", "R64"],
     "ITYPE": "I32"
@@ -54,7 +54,7 @@ Generic definitions of base number specific functions, types, etc.
 \param src [in] a pointer to a source number memory block
 \param count [in] element count of destination memory block
 */
-void SLCBLAS<VTYPE>_AddAss(
+void SLCBLAS_<VTYPE>AddAss(
     SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* src, SLC_<ITYPE>_t count);
 
 /**
@@ -63,7 +63,7 @@ void SLCBLAS<VTYPE>_AddAss(
 \param scale [in] a pointer to a source number variable
 \param count [in] element count of destination memory block
 */
-void SLCBLAS<VTYPE>_ScaleAss(
+void SLCBLAS_<VTYPE>ScaleAss(
     SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* scale, SLC_<ITYPE>_t count);
 
 /**
@@ -73,7 +73,7 @@ void SLCBLAS<VTYPE>_ScaleAss(
 \param scale [in] a pointer to a source number variable
 \param count [in] element count of destination and source memory block
 */
-void SLCBLAS<VTYPE>_ScaleAddAss(
+void SLCBLAS_<VTYPE>ScaleAddAss(
     SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* src,
     const SLC_<VTYPE>_t* scale, SLC_<ITYPE>_t count);
 
@@ -83,7 +83,7 @@ void SLCBLAS<VTYPE>_ScaleAddAss(
 \param src [in] a pointer to a source number memory block
 \param count [in] element count of destination memory block
 */
-void SLCBLAS<VTYPE>_MultiplyEbeAss(
+void SLCBLAS_<VTYPE>MultiplyEbeAss(
     SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* src, SLC_<ITYPE>_t count);
 #pragma endregion <VTYPE>_ASSIGNMENT_OPERATION
 ```
@@ -97,7 +97,7 @@ void SLCBLAS<VTYPE>_MultiplyEbeAss(
 \param src1 [in] pointer to the second source number memory block
 \param count [in] element count of each memory block
 */
-void SLCBLAS<VTYPE>_Add(
+void SLCBLAS_<VTYPE>Add(
     SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* src0,
     const SLC_<VTYPE>_t* src1, SLC_<ITYPE>_t count);
 
@@ -108,7 +108,7 @@ void SLCBLAS<VTYPE>_Add(
 \param scale [in] pointer to the multiplier number variable
 \param count [in] element count of each memory block
 */
-void SLCBLAS<VTYPE>_Scale(
+void SLCBLAS_<VTYPE>Scale(
     SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* src, 
     const SLC_<VTYPE>_t* scale, SLC_<ITYPE>_t count);
 
@@ -121,7 +121,8 @@ void SLCBLAS<VTYPE>_Scale(
 \param src1 [in] pointer to the second source number memory block
 \param scale1 [in] pointer to the second multiplier number variable
 \param count [in] element count of each memory block
-void SLCBLAS<VTYPE>_ScaleAdd(
+*/
+void SLCBLAS_<VTYPE>ScaleAdd(
     SLC_<VTYPE>_t* dst, 
     const SLC_<VTYPE>_t* src0, const SLC_<VTYPE>_t* scale0, 
     const SLC_<VTYPE>_t* src1, const SLC_<VTYPE>_t* scale1,
@@ -129,7 +130,16 @@ void SLCBLAS<VTYPE>_ScaleAdd(
 
 // element-by-element operation has a postfix 'ebe'
 // element-by-element product
-void SLCBLAS<VTYPE>_MultiplyEbe(SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* src0, const SLC_<VTYPE>_t* src1, SLC_<ITYPE>_t count);
+/**
+\brief non-assignment element-by-element multiplication
+\param dst [out] pointer to a number memory block of result vector
+\param src0 [in] pointer to the first source number memory block
+\param src1 [in] pointer to the second source number memory block
+\param count [in] element count of each memory block
+*/
+void SLCBLAS_<VTYPE>MultiplyEbe(SLC_<VTYPE>_t* dst, 
+    const SLC_<VTYPE>_t* src0, const SLC_<VTYPE>_t* src1,
+    SLC_<ITYPE>_t count);
 
 /**
 \brief copy conjugate of a number array in scatter, gather, or continuous
@@ -140,7 +150,7 @@ void SLCBLAS<VTYPE>_MultiplyEbe(SLC_<VTYPE>_t* dst, const SLC_<VTYPE>_t* src0, c
 \param src_step [in] source index increment step
 \param count [in] copy size
 */
-void SLCBLAS<VTYPE>_CopyConj(
+void SLCBLAS_<VTYPE>CopyConj(
     SLC_<VTYPE>_t* dst, SLC_<ITYPE>_t dst_step,
     const SLC_<VTYPE>_t* src, SLC_<ITYPE>_t src_step,
     SLC_<ITYPE>_t count
@@ -149,7 +159,7 @@ void SLCBLAS<VTYPE>_CopyConj(
 ```
 ## vector-in scalar-out operations
 ```
-#pragma region <VTYPE>_VECTOR_TO_SCALAR_OPERATION
+#pragma region <VTYPE>_VECTOR_IN_SCALAR_OUT_OPERATION
 /**
 \brief Inner product of two vectors; i.e. sum(src0[*] * conj(src1[*]))
 \param src0 [in] a pointer to the first number memory block
@@ -159,7 +169,7 @@ void SLCBLAS<VTYPE>_CopyConj(
 \param count [in] element count of each memory block
 \return Inner product result
 */
-SLC_<VTYPE>_t SLCBLAS<VTYPE>_InnerProduct(
+SLC_<VTYPE>_t SLCBLAS_<VTYPE>InnerProduct(
     const SLC_<VTYPE>_t* src0, const SLC_<VTYPE>_t* src1,
     SLC_<ITYPE>_t count);
 
@@ -170,7 +180,7 @@ SLC_<VTYPE>_t SLCBLAS<VTYPE>_InnerProduct(
 \param count [in] element count of each memory block
 \brief return product sum result
 */
-SLC_<VTYPE>_t SLCBLAS<VTYPE>_ProductSum(
+SLC_<VTYPE>_t SLCBLAS_<VTYPE>ProductSum(
     const SLC_<VTYPE>_t* src0, const SLC_<VTYPE>_t* src1,
     SLC_<ITYPE>_t count);
 
@@ -180,7 +190,7 @@ SLC_<VTYPE>_t SLCBLAS<VTYPE>_ProductSum(
 \param count [in] element count of the memory block
 \return sum of the elements in the memory block
 */
-SLC_<VTYPE>_t SLCBLAS<VTYPE>_Sum(
+SLC_<VTYPE>_t SLCBLAS_<VTYPE>Sum(
     const SLC_<VTYPE>_t* src, SLC_<ITYPE>_t count);
 
 /**
@@ -189,9 +199,9 @@ SLC_<VTYPE>_t SLCBLAS<VTYPE>_Sum(
 \param count [in] element count of the memory block
 \return Absolute sum of the elements in the memory block
 */
-SLC_<RTYPE>_t SLCBLAS<VTYPE>_AbsSum(
+SLC_<RTYPE>_t SLCBLAS_<VTYPE>AbsSum(
     const SLC_<VTYPE>_t* src, SLC_<ITYPE>_t count);
-#pragma endregion <VTYPE>_VECTOR_TO_SCALAR_OPERATION
+#pragma endregion <VTYPE>_VECTOR_IN_SCALAR_OUT_OPERATION
 #pragma endregion <VTYPE>_functions
 ```
 # Foot
