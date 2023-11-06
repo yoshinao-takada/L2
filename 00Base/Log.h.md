@@ -95,7 +95,7 @@ void SLCLog_WriteErrHeader(SLC_errno_t err);
 if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_ERR)) \
 { \
     SLCLog_WriteErrHeader(err); \
-    fprintf(SLCLog_Sink, _VA_ARGS_); \
+    fprintf(SLCLog_Sink, __VA_ARGS__); \
 }
 
 /**
@@ -105,7 +105,7 @@ if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_ERR)) \
 if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_INF)) \
 { \
     SLCLog_WriteHeader(SLCLog_Level_INF); \
-    fprintf(SLCLog_Sink, _VA_ARGS_); \
+    fprintf(SLCLog_Sink, __VA_ARGS__); \
 }
 
 /**
@@ -115,7 +115,7 @@ if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_INF)) \
 if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_DBG)) \
 { \
     SLCLog_WriteHeader(SLCLog_Level_DBG); \
-    fprintf(SLCLog_Sink, _VA_ARGS_); \
+    fprintf(SLCLog_Sink, __VA_ARGS__); \
 }
 
 /**
@@ -125,7 +125,7 @@ if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_DBG)) \
 if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_PERF)) \
 { \
     SLCLog_WriteHeader(SLCLog_Level_PERF); \
-    fprintf(SLCLog_Sink, _VA_ARGS_); \
+    fprintf(SLCLog_Sink, __VA_ARGS__); \
 }
 
 /**
@@ -135,7 +135,7 @@ if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_PERF)) \
 if ((SLCLog_Sink) && (SLCLog_Level & SLCLog_Level_TEST)) \
 { \
     SLCLog_WriteHeader(SLCLog_Level_TEST); \
-    fprintf(SLCLog_Sink, _VA_ARGS_); \
+    fprintf(SLCLog_Sink, __VA_ARGS__); \
 }
 #pragma endregion LevelSpecificLogWriter
 ```
@@ -164,12 +164,12 @@ typedef SLC_errno_t (*SLCTest_Method_f)();
 typedef SLC_errno_t (*SLCTest_Method2_f)(SLCTest_Args_cpt args);
 
 /**
-\brief Test function execution macro
+\brief Test function execution macro for no argument functions
 \param _errnoPtr [out]
 \param _methodToTest [in] test function with no argument
-\param _file [in] caller __FILE__ macro
-\param _func [in] caller __FUNCTION__ macro
-\param _line [in] caller __LINE__ macro
+\param _file [in] caller source file, usually filled with __FILE__
+\param _func [in] caller function name, usually filled with __FUNCTION__
+\param _line [in] caller source line, usually filled with __LINE__
 */
 #define SLCTest_RUN(_errnoPtr, _methodToTest, _file, _func, _line) \
     *_errnoPtr = _methodToTest(); \
@@ -181,19 +181,26 @@ typedef SLC_errno_t (*SLCTest_Method2_f)(SLCTest_Args_cpt args);
 
 
 /**
-\brief Test function execution macro with break statement
+\brief Test function execution macro with if-error-break statement
 \param _errnoPtr [out]
-\param _methodToTest [in] test function with 
-\param _file [in] caller __FILE__ macro
-\param _func [in] caller __FUNCTION__ macro
-\param _line [in] caller __LINE__ macro
+\param _methodToTest [in] test function with no argument
+\param _file [in] caller source file, usually filled with __FILE__
+\param _func [in] caller function name, usually filled with __FUNCTION__
+\param _line [in] caller source line, usually filled with __LINE__
 */
 #define SLCTest_RUN_ERROR_BREAK( \
     _errnoPtr, _methodToTest, _file, _func, _line) \
     SLCTest_RUN(_errnoPtr, _methodToTest, _file, _func, _line); \
     if (*_errnoPtr) break
 
-
+/**
+\brief Test function execution macro for functions with arguments
+\param _errnoPtr [out]
+\param _methodToTest [in] test function with arguments
+\param _file [in] caller source file, usually filled with __FILE__
+\param _func [in] caller function name, usually filled with __FUNCTION__
+\param _line [in] caller source line, usually filled with __LINE__
+*/
 #define SLCTest_RUN2 \
     (_errnoPtr, _methodToTest, _settingPtr, _file, _func, _line) \
     *_errnoPtr = _methodToTest(_settingPtr); \
@@ -201,16 +208,25 @@ typedef SLC_errno_t (*SLCTest_Method2_f)(SLCTest_Args_cpt args);
         SLCLog_ERR(*_errnoPtr, "file=%s, func=%s, line=%d\n", _file, _func, _line); \
         if (SLC_TEST_ABORT_ON_FAIL) break; }
 
+/**
+\brief Test function execution macro with if-error-break statement
+    for functions with arguments
+\param _errnoPtr [out]
+\param _methodToTest [in] test function with arguments
+\param _file [in] caller source file, usually filled with __FILE__
+\param _func [in] caller function name, usually filled with __FUNCTION__
+\param _line [in] caller source line, usually filled with __LINE__
+*/
 #define SLCTest_RUN2_ERROR_BREAK( \
     _errnoPtr, _methodToTest, _settingPtr, _file, _func, _line) \
     SLCTest_RUN2( \
         _errnoPtr, _methodToTest, _settingPtr, _file, _func, _line); \
     if (*_errnoPtr) break
 
-#define SLCTest_END(_errnoPtr, _file, _func, _line) \
+#define SLCTest_END(_errno, _file, _func, _line) \
     SLCLog_TEST( \
-        "errno=0x%x(%d) @ %s,%d\n", \
-        *_errnoPtr, *_errnoPtr, _file, _func, _line)
+        "errno=0x%x(%d) @ %s,%s,%d\n", \
+        _errno, _errno, _file, _func, _line)
 
 #pragma endregion test_utility_macros
 ```
