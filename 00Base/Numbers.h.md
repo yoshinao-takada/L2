@@ -184,10 +184,10 @@ typedef const void*     SLC_16Void_cpt[16];
 #define SLC_R64_CONJ(_a)        (_a)
 #define SLC_C64_CONJ(_a)        conjf(_a)
 #define SLC_C128_CONJ(_a)       conj(_a)
-#define SLC_R32_FROMREAL(_a)    (_a)
-#define SLC_R64_FROMREAL(_a)    (_a)
-#define SLC_C64_FROMREAL(_a)    CMPLXF(_a, 0.0f)
-#define SLC_C128_FROMREAL(_a)   CMPLX(_a, 0.0)
+#define SLC_R32_FROM_REAL(_a)    (_a)
+#define SLC_R64_FROM_REAL(_a)    (_a)
+#define SLC_C64_FROM_REAL(_a)    CMPLXF(_a, 0.0f)
+#define SLC_C128_FROM_REAL(_a)   CMPLX(_a, 0.0)
 #pragma endregion number_conversion_functions
 
 #pragma region random_number_generator
@@ -203,7 +203,7 @@ typedef const void*     SLC_16Void_cpt[16];
 ```
 ## Small array operation
 ```
-#define SLC_ARRAYSIZE(_a)       (sizeof(_a)/sizeof(_a[0]))
+#define SLC_ARRAY_SIZE(_a)       (sizeof(_a)/sizeof(_a[0]))
 #define SLC_PROD2(_a)           (_a)[0] * (_a)[1]
 #define SLC_PROD3(_a)           (_a)[0] * (_a)[1] * (_a)[2]
 #define SLC_PROD4(_a)           (_a)[0] * (_a)[1] * \
@@ -289,10 +289,32 @@ typedef const void*     SLC_16Void_cpt[16];
 # Generic
 Generic definitions of base number specific functions, types, etc.
 ```
+
+#pragma region <VTYPE>_NUMBER_NUMBER_COMPARISON
+#define SLC_<VTYPE>_SUM_ABS2(_x0, _x1)  \
+    (SLC_<VTYPE>_ABS(_x0) + SLC_<VTYPE>_ABS(_x1))
+
+#define SLC_<VTYPE>_ABS_DIFF(_x0, _x1) \
+    (SLC_<VTYPE>_ABS(_x0 - _x1))
+
+#define SLC_<VTYPE>_REL_ABS_DIFF(_x0, _x1) \
+    SLC_<VTYPE>_ABS_DIFF(_x0, _x1) / \
+    SLC_<VTYPE>_SUM_ABS2(_x0, _x1)
+
+#define SLC_<VTYPE>_SAFE_REL_ABS_DIFF(_x0, _x1, _TOL) \
+    (((SLC_<VTYPE>_ABS(_x0) < _TOL) || \
+     (SLC_<VTYPE>_ABS(_x1) < _TOL)) ? \
+        SLC_<VTYPE>_ABS_DIFF(_x0, _x1) : \
+        SLC_<VTYPE>_REL_ABS_DIFF(_x0, _x1))
+
+#define SLC_<VTYPE>_ARE_EQUAL(_x0, _x1, _TOL) \
+    (SLC_<VTYPE>_SAFE_REL_ABS_DIFF(_x0, _x1, _TOL) < _TOL)
+#pragma endregion <VTYPE>_NUMBER_NUMBER_COMPARISON
 ```
 # Foot
 Foot contains definitions common to all base number types.
 Foot is placed after all generic code are placed.
 ```
+
 #endif /* _00BASE_NUMBERS_H */
 ```

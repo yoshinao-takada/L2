@@ -95,9 +95,9 @@ void SLCLog_<VTYPE>Err(SLC_errno_t err,
     if ((!SLCLog_Sink) || (0 == (SLCLog_Level & SLCLog_Level_ERR))) return;
     SLCLog_WriteErrHeader(err);
     fprintf(SLCLog_Sink, "Number mismatch, %s[%d] = ", refname, index);
-    SLC_<VTYPE>PRINT(SLCLog_Sink, refarray[index]);
+    SLC_<VTYPE>_PRINT(SLCLog_Sink, refarray[index]);
     fprintf(SLCLog_Sink, ", %s[%d] = ");
-    SLC_<VTYPE>PRINT(SLCLog_Sink, testarray[index]);
+    SLC_<VTYPE>_PRINT(SLCLog_Sink, testarray[index]);
     SLC_NEWLINE(SLCLog_Sink);
 }
 #pragma endregion <VTYPE>_functions

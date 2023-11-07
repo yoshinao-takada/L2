@@ -43,11 +43,11 @@ Author: Initials of revision authors
 #include <stdio.h>
 
 // scalar output
-#define SLC_R32PRINT(_out, _x) fprintf(_out, "%f", _x)
-#define SLC_R64PRINT(_out, _x) fprintf(_out, "%f", _x)
-#define SLC_C64PRINT(_out, _x) \
+#define SLC_R32_PRINT(_out, _x) fprintf(_out, "%f", _x)
+#define SLC_R64_PRINT(_out, _x) fprintf(_out, "%f", _x)
+#define SLC_C64_PRINT(_out, _x) \
     fprintf(_out, "%f, %f", crealf(_x), cimagf(_x))
-#define SLC_C128PRINT(_out, _x) \
+#define SLC_C128_PRINT(_out, _x) \
     fprintf(_out, "%f, %f", creal(_x), cimag(_x))
 #define SLC_NEWLINE(_out) fprintf(_out, "\n")
 ```
@@ -61,18 +61,18 @@ Generic definitions of base number specific functions, types, etc.
 \param _x [in] the pointer to the head of the number array
 \param _count [in] the element count of the array
 */
-#define SLC_<VTYPE>PRINTV(_out, _x, _count) \
+#define SLC_<VTYPE>_PRINTV(_out, _x, _count) \
     for (SLC_<ITYPE>_t _index = 0; _index < _count; _index++) \
     { \
         fprintf(_out, (_index == 0) ? "" : ", "); \
-        SLC_<VTYPE>PRINT(_out, _x[_index]); \
+        SLC_<VTYPE>_PRINT(_out, _x[_index]); \
     }
 
 /**
-\brief print newline after SLC_<VTYPE>PRINTV().
+\brief print newline after SLC_<VTYPE>_PRINTV().
 */
-#define SLC_<VTYPE>PRINTVN(_out, _x, _count) \
-    SLC_<VTYPE>PRINTV(_out, _x, _count); SLC_NEWLINE(_out);
+#define SLC_<VTYPE>_PRINTVN(_out, _x, _count) \
+    SLC_<VTYPE>_PRINTV(_out, _x, _count); SLC_NEWLINE(_out);
 #pragma endregion <VTYPE>_macros
 ```
 # Foot
