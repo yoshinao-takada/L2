@@ -40,16 +40,18 @@ Author: Initials of revision authors
 #include "SLC/Log.h"
 #include "SLC/NumbersCopy.h"
 #include <stdlib.h>
+#include <memory.h>
+#define BUFFER_SIZE 8
 ```
 ## R32 Test Data
 ```
-static const SLC_R32_t R32_SRC0[] = { -1.0f, -0.3f, 1.1f };
-static const SLC_R32_t R32_SRC1[] = { 1.2f, 0.1f, -1.5f };
+static const SLC_R32_t R32_SRC0[] = { -1.0f, -0.3f, 1.1f, 2.5f };
+static const SLC_R32_t R32_SRC1[] = { 1.2f, 0.1f, -1.5f, -2.2f };
 ```
 ## R64 Test Data
 ```
-static const SLC_R64_t R64_SRC0[] = { -1.0, -0.3, 1.1 };
-static const SLC_R64_t R64_SRC1[] = { 1.2, 0.1, -1.5 };
+static const SLC_R64_t R64_SRC0[] = { -1.0, -0.3, 1.1, 2.5 };
+static const SLC_R64_t R64_SRC1[] = { 1.2, 0.1, -1.5, -2.2 };
 ```
 ## C64 Test Data
 ```
@@ -86,7 +88,7 @@ Generic definitions of base number specific functions, types, etc.
 static SLC_errno_t <VTYPE>CopyUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
-    SLC_<VTYPE>_t dst[4];
+    SLC_<VTYPE>_t dst[BUFFER_SIZE];
     const SLC_<ITYPE>_t srcSize = SLC_ARRAY_SIZE(<VTYPE>_SRC0);
     do
     {
@@ -135,9 +137,24 @@ static SLC_errno_t <VTYPE>CopyUT()
 static SLC_errno_t <VTYPE>SwapUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t src0[BUFFER_SIZE], src1[BUFFER_SIZE];
+    SLC_<ITYPE>_t arraySize = SLC_ARRAY_SIZE(<VTYPE>_SRC0);
     do
     {
-
+        memcpy(src0, <VTYPE>_SRC0, sizeof(<VTYPE>_SRC0));
+        memcpy(src1, <VTYPE>_SRC1, sizeof(<VTYPE>_SRC1));
+        SLC_<VTYPE>Swap(src0, 1, src1, 1, arraySize);
+        for (SLC_<ITYPE>_t i = 0; i < arraySize; i++)
+        {
+            if ((<VTYPE>_SRC0[i] != src1[i]) ||
+                (<VTYPE>_SRC1[i] != src0[i]))
+            {
+                err = SLC_EVALMISMATCH;
+                SLCLog_ERR(err, "Value mismatch @ %s,%s,%d\n",
+                    __FILE__, __FUNCTION__, __LINE__);
+                break;
+            }
+        }
     }
     while (0);
     SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
@@ -149,9 +166,22 @@ static SLC_errno_t <VTYPE>SwapUT()
 static SLC_errno_t <VTYPE>GatherUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[BUFFER_SIZE];
     do
     {
-
+        for (SLC_<ITYPE>_t i = 0; i < BUFFER_SIZE; i++)
+        {
+            dst[i] = SLC_<VTYPE>_0;
+        }
+        SLC_<VTYPE>Gather(dst, <VTYPE>_SRC0, 2, 2);
+        if ((dst[0] != <VTYPE>_SRC0[0]) ||
+            (dst[1] != <VTYPE>_SRC0[2]))
+        {
+            err = SLC_EVALMISMATCH;
+            SLCLog_ERR(err, "Value mismatch @ %s,%s,%d\n",
+                __FILE__, __FUNCTION__, __LINE__);
+            break;
+        }
     }
     while (0);
     SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
@@ -163,9 +193,22 @@ static SLC_errno_t <VTYPE>GatherUT()
 static SLC_errno_t <VTYPE>ScatterUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[BUFFER_SIZE];
     do
     {
-
+        for (SLC_<ITYPE>_t i = 0; i < BUFFER_SIZE; i++)
+        {
+            dst[i] = SLC_<VTYPE>_0;
+        }
+        SLC_<VTYPE>Scatter(dst, 2, <VTYPE>_SRC0, 2);
+        if ((dst[0] != <VTYPE>_SRC0[0]) ||
+            (dst[2] != <VTYPE>_SRC0[1]))
+        {
+            err = SLC_EVALMISMATCH;
+            SLCLog_ERR(err, "Value mismatch @ %s,%s,%d\n",
+                __FILE__, __FUNCTION__, __LINE__);
+            break;
+        }
     }
     while (0);
     SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
