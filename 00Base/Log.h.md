@@ -225,7 +225,7 @@ typedef SLC_errno_t (*SLCTest_Method2_f)(SLCTest_Args_cpt args);
 
 #define SLCTest_END(_errno, _file, _func, _line) \
     SLCLog_TEST( \
-        "errno=0x%x(%d) @ %s,%s,%d\n", \
+        "Ended with errno=0x%x(%d) @ %s,%s,%d\n", \
         _errno, _errno, _file, _func, _line)
 
 #pragma endregion test_utility_macros

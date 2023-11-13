@@ -83,21 +83,27 @@ $(INCDIR)/SLC/Numbers.h	:	Numbers.h.md
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/Array.h	:	Array.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/NumbersCopy.h	:	NumbersCopy.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/ExIO.h	:	ExIO.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/Log.h	:	Log.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/Stopwatch.h	:	Stopwatch.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/errno.h	:	errno.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 clean_debug	:
