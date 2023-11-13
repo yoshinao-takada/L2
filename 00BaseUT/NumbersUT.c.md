@@ -48,11 +48,10 @@ static const SLC_R32_t
     R32_PLUS_SMALL = 0.9f * SLC_R32_STDTOL,
     R32_MINUS_SMALL = -0.9f * SLC_R32_STDTOL,
     R32_PLUS_LARGE = SLC_R32_1,
-    R32_PLUS_LARGE_MINUS_SMALL = R32_PLUS_LARGE - R32_PLUS_SMALL,
-    R32_PLUS_LARGE_MINUS_2SMALL = 
-        R32_PLUS_LARGE - (R32_PLUS_SMALL - R32_PLUS_SMALL);
+    R32_PLUS_LARGE_MINUS_SMALL = (R32_PLUS_LARGE - R32_PLUS_SMALL),
+    R32_PLUS_LARGE_MINUS_3SMALL = (R32_PLUS_LARGE_MINUS_SMALL
+        - R32_PLUS_SMALL - R32_PLUS_SMALL);
 #pragma endregion R32_TEST_DATA
-
 ```
 ## R64 Test Data
 ```
@@ -61,11 +60,10 @@ static const SLC_R64_t
     R64_PLUS_SMALL = 0.9 * SLC_R64_STDTOL,
     R64_MINUS_SMALL = -0.9 * SLC_R64_STDTOL,
     R64_PLUS_LARGE = SLC_R64_1,
-    R64_PLUS_LARGE_MINUS_SMALL = R64_PLUS_LARGE - R64_PLUS_SMALL,
-    R64_PLUS_LARGE_MINUS_2SMALL = 
-        R64_PLUS_LARGE - (R64_PLUS_SMALL - R64_PLUS_SMALL);
+    R64_PLUS_LARGE_MINUS_SMALL = (R64_PLUS_LARGE - R64_PLUS_SMALL),
+    R64_PLUS_LARGE_MINUS_3SMALL = (R64_PLUS_LARGE_MINUS_SMALL
+        - R64_PLUS_SMALL - R64_PLUS_SMALL);
 #pragma endregion R64_TEST_DATA
-
 ```
 ## C64 Test Data
 ```
@@ -74,11 +72,10 @@ static const SLC_C64_t
     C64_PLUS_SMALL = CMPLXF(0.9f, 0.0f) * SLC_C64_STDTOL,
     C64_MINUS_SMALL = CMPLXF(-0.9f, 0.0f) * SLC_C64_STDTOL,
     C64_PLUS_LARGE = SLC_C64_1,
-    C64_PLUS_LARGE_MINUS_SMALL = C64_PLUS_LARGE - C64_PLUS_SMALL,
-    C64_PLUS_LARGE_MINUS_2SMALL = 
-        C64_PLUS_LARGE - (C64_PLUS_SMALL - C64_PLUS_SMALL);
+    C64_PLUS_LARGE_MINUS_SMALL = (C64_PLUS_LARGE - C64_PLUS_SMALL),
+    C64_PLUS_LARGE_MINUS_3SMALL = (C64_PLUS_LARGE_MINUS_SMALL
+        - C64_PLUS_SMALL - C64_PLUS_SMALL);
 #pragma endregion C64_TEST_DATA
-
 ```
 ## C128 Test Data
 ```
@@ -87,11 +84,12 @@ static const SLC_C128_t
     C128_PLUS_SMALL = CMPLX(0.9, 0.0) * SLC_C128_STDTOL,
     C128_MINUS_SMALL = CMPLX(-0.9, 0.0) * SLC_C128_STDTOL,
     C128_PLUS_LARGE = SLC_C128_1,
-    C128_PLUS_LARGE_MINUS_SMALL = C128_PLUS_LARGE - C128_PLUS_SMALL,
-    C128_PLUS_LARGE_MINUS_2SMALL = 
-        C128_PLUS_LARGE - (C128_PLUS_SMALL - C128_PLUS_SMALL);
+    C128_PLUS_LARGE_MINUS_SMALL = (C128_PLUS_LARGE - C128_PLUS_SMALL),
+    C128_PLUS_LARGE_MINUS_3SMALL = (C128_PLUS_LARGE_MINUS_SMALL
+        - C128_PLUS_SMALL - C128_PLUS_SMALL);
 #pragma endregion C128_TEST_DATA
-
+static const char* LOG_FMT = "Value mismatch @ %s,%s,%d\n";
+static const char* LOG_FMT2 = "Invalid value match @ %s,%s,%d\n";
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.
@@ -100,14 +98,31 @@ Generic definitions of base number specific functions, types, etc.
 ```
 ## Test for equality checker with two small numbers
 ```
-SLC_errno_t <VTYPE>EqalityTwoSmallNumbersUT()
+SLC_errno_t <VTYPE>EqualityTwoSmallNumbersUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
+    bool b;
     do
     {
-        bool b =
+        b = SLC_<VTYPE>_ARE_EQUAL(
+            <VTYPE>_PLUS_SMALL, SLC_<VTYPE>_0, SLC_<VTYPE>_STDTOL);
+        if (!b)
+        {
+            err = SLC_EVALMISMATCH;
+            SLCLog_ERR(err, LOG_FMT, __FILE__, __FUNCTION__, __LINE__);
+            break;
+        }
+        b = SLC_<VTYPE>_ARE_EQUAL(
+            <VTYPE>_PLUS_SMALL, <VTYPE>_MINUS_SMALL, SLC_<VTYPE>_STDTOL);
+        if (b)
+        {
+            err = SLC_EVALMISMATCH;
+            SLCLog_ERR(err, LOG_FMT2, __FILE__, __FUNCTION__, __LINE__);
+            break;
+        }
     }
     while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
     return err;
 }
 ```
@@ -116,11 +131,30 @@ SLC_errno_t <VTYPE>EqalityTwoSmallNumbersUT()
 SLC_errno_t <VTYPE>EqalityTwoMediumNumbersUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
+    bool b;
     do
     {
-
+        b = SLC_<VTYPE>_ARE_EQUAL(
+            <VTYPE>_PLUS_LARGE, <VTYPE>_PLUS_LARGE_MINUS_SMALL,
+            SLC_<VTYPE>_STDTOL);
+        if (!b)
+        {
+            err = SLC_EVALMISMATCH;
+            SLCLog_ERR(err, LOG_FMT, __FILE__, __FUNCTION__, __LINE__);
+            break;
+        }
+        b = SLC_<VTYPE>_ARE_EQUAL(
+            <VTYPE>_PLUS_LARGE, <VTYPE>_PLUS_LARGE_MINUS_3SMALL,
+            SLC_<VTYPE>_STDTOL);
+        if (b)
+        {
+            err = SLC_EVALMISMATCH;
+            SLCLog_ERR(err, LOG_FMT2, __FILE__, __FUNCTION__, __LINE__);
+            break;
+        }
     }
     while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
     return err;
 }
 ```
@@ -129,11 +163,20 @@ SLC_errno_t <VTYPE>EqalityTwoMediumNumbersUT()
 SLC_errno_t <VTYPE>EqalitySmallAndMediumNumbersUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
+    bool b;
     do
     {
-
+        b = SLC_<VTYPE>_ARE_EQUAL(
+            <VTYPE>_PLUS_LARGE, <VTYPE>_PLUS_SMALL, SLC_<VTYPE>_STDTOL);
+        if (b)
+        {
+            err = SLC_EVALMISMATCH;
+            SLCLog_ERR(err, LOG_FMT2, __FILE__, __FUNCTION__, __LINE__);
+            break;
+        }
     }
     while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
     return err;
 }
 ```
@@ -144,7 +187,15 @@ static SLC_errno_t <VTYPE>NumbersUT()
     SLC_errno_t err = EXIT_SUCCESS;
     do
     {
-
+        SLCTest_RUN_ERROR_BREAK(
+            &err, <VTYPE>EqualityTwoSmallNumbersUT, __FILE__,
+            __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(
+            &err, <VTYPE>EqalityTwoMediumNumbersUT, __FILE__,
+            __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(
+            &err, <VTYPE>EqalitySmallAndMediumNumbersUT, __FILE__,
+            __FUNCTION__, __LINE__);
     }
     while (0);
     SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
