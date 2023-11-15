@@ -25,8 +25,8 @@ All source files and data files are protected by the license term of
 `LICENSE` in the project root directory.
 
 File description
-File: Template.md
-Description: A template file for 'slcpp.js' preprocessor input.
+File: NLSL.c
+Description: Nonlinear equation solver implementation
 
 Revision history
 Rev.     Date   Author  Description
@@ -37,14 +37,89 @@ Date format: YYMMDD (YY: lower 2 digits of dominical year,
              MM:month(1..12), DD: day of month (1..31))
 Author: Initials of revision authors
 */
-#include "SLC/Numbers.h"
+#include "SLC/NLSL.h"
+#include "SLC/Log.h"
 #include "SLC/NumbersCopy.h"
+#include "SLC/MiniBLAS.h"
+#include "SLC/MiniLA.h"
+#include "SLC/errno.h"
+#include "SLC/ExIO.h"
+#include <assert.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <malloc.h>
+#include <memory.h>
+#include <errno.h>
+
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.
+## Internal Declarations
 ```
 #pragma region <VTYPE>_functions
+#pragma region <VTYPE>_INTERNAL_DECLARATIONS
+/**
+\brief Declare type of trace functions for Gauss-Newton solvers.
+*/
+typedef void (*GnSolver_<VTYPE>Trace_f)(SLCGnSolver_<VTYPE>_cpt solver);
+
+/**
+\brief Discriminate where the solver is converged or not.
+*/
+typedef bool (*GnSolver_<VTYPE>Converged_f)(SLCGnSlver_<VTYPE>_cpt solver);
+
+/**
+\brief Full definition of Gauss-Newton solver struct
+*/
+struct SLCGnSolver_<VTYPE>
+{
+    // Configuration parameters
+    SLCGnSolver_<VTYPE>Conf_t conf;
+
+    // working matrices
+    SLCArray_pt
+        x, // X column vector
+        deltaX, // == x_new - x; i.e. x_new = x + delta_x.
+        y, negy, // Y and -Y column vectors
+        jcolbuf, // Jacobian column buffer
+        j; // Jacobian
+    SLCMat_LmsSolverMatSet_t wkset;
+
+    // operation state
+    SLCNlsl_State_t state;
+
+    // iteration counter
+    SLC_<ITYPE>_t iter;
+
+    // Convergence parameters
+    // L1 norm of deltaX and y
+    SLC_<RTYPE>_t normDx, normY;
+
+    // convergence discriminator
+    GnSolver_<VTYPE>Converged_f convDisc;
+
+    // trace functions
+    GnSolver_<VTYPE>Trace_f
+        traceXY, // trace x and y
+        traceJ, // trace Jacobian
+        traceNormDxY; // trace deltaX and y
+};
+#pragma endregion <VTYPE>_INTERNAL_DECLARATIONS
+```
+## Trace Functions and Convergence Discriminators
+```
+#pragma region TRACE_FUNC_AND_CONV_DISC
+#pragma endregion TRACE_FUNC_AND_CONV_DISC
+```
+## Initializer and Momory Management
+```
+#pragmaa region INITIALIZER
+#pragmaa endregion INITIALIZER
+```
+## Public Functions
+```
+#pragma region PUBLIC_FUNCTIONS
+#pragma endregion PUBLIC_FUNCTIONS
 #pragma endregion <VTYPE>_functions
 ```
 # Foot

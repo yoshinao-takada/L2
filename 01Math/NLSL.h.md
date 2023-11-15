@@ -63,7 +63,7 @@ typedef enum {
     SLCNlsl_ConvergencCondition_DX = 1, // x satisfy criterion
     SLCNlsl_ConvergencCondition_Y = 2, // y satisfy criterion
     SLCNlsl_ConvergencCondition_BOTH = 3, // both of x and y satisfy criteria
-} SLCNlsl_ConvergenceConditions_t;
+} SLCNlsl_ConvergenceCondition_t;
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.
@@ -100,11 +100,11 @@ typedef struct
     /*!
     \brief Convergence condition descriptor
     */
-    SLCNlsl_ConvergenceConditions_t ConvergenceConditions;
+    SLCNlsl_ConvergenceCondition_t ConvergenceCondition;
     SLC_<VTYPE>_t *XInitial; //!< Initial value of x
     SLC_<RTYPE>_t NormDxMax; //!< Convergence criteria of delta-X
     SLC_<RTYPE>_t NormYMax; // !< Convergence criteria of Y
-    SLC_<VTYPE>Gvv_f Objective; // !< Objective function
+    SLCNlsl_<VTYPE>Gvv_f Objective; // !< Objective function
     void* Context; // !< Context of objective and Jacobian
 }
 SLCNlsl_<VTYPE>Conf_t, *SLCNlsl_<VTYPE>Conf_pt;
@@ -116,7 +116,7 @@ typedef const SLCNlsl_<VTYPE>Conf_t *SLCNlsl_<VTYPE>Conf_cpt;
 typedef struct
 {
     SLCNlsl_<VTYPE>Conf_t Base;
-    SLC_<VTYPE>Gvv_f* Jacobian;
+    SLCNlsl_<VTYPE>Gvv_f* Jacobian;
 }
 SLCGnSolver_<VTYPE>Conf_t, *SLCGnSolver_<VTYPE>Conf_pt;
 typedef const SLCGnSolver_<VTYPE>Conf_t *SLCGnSolver_<VTYPE>Conf_cpt;
