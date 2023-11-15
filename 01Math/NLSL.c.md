@@ -37,8 +37,6 @@ Date format: YYMMDD (YY: lower 2 digits of dominical year,
              MM:month(1..12), DD: day of month (1..31))
 Author: Initials of revision authors
 */
-#if !defined(_00BASE_NUMBERS_H)
-#define _00BASE_NUMBERS_H
 #include "SLC/Numbers.h"
 #include "SLC/NumbersCopy.h"
 #include <stdio.h>
@@ -53,5 +51,4 @@ Generic definitions of base number specific functions, types, etc.
 Foot contains definitions common to all base number types.
 Foot is placed after all generic code are placed.
 ```
-#endif /* _00BASE_NUMBERS_H */
 ```

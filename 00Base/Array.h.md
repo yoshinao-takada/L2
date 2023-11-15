@@ -55,7 +55,7 @@ typedef union
     SLC_I64_t    I64;
     SLC_8I8_t    I8;
 }
-SLCArray_Control_t;
+SLCArray_Dimensions_t;
 
 /**
 \brief data buffer header of multidimensional array
@@ -81,7 +81,7 @@ SLCArray_Data_t;
 */
 typedef struct
 {
-    SLCArray_Control_t   Control;
+    SLCArray_Dimensions_t   Dimensions;
     SLCArray_Data_t      Data;
 }
 SLCArray_t, *SLCArray_pt;
@@ -112,17 +112,41 @@ extern
 #endif
 SLC_I64_t SLCArray_LatestAllocated;
 
-#define SLCArray_ALLOC(_size) SLCArray_Init( \
-    (SLCArray_pt)malloc( \
+/**
+\brief Create a new array. A memory block is allocated and
+    the dimensions of the array are initialized. But
+    each element is not cleared nor initialized.
+    The memory block shall be freed by free(void*).
+\param _size [in] four dimensions<br/>
+[0]: unit size<br/>
+[1]: 1st dimension<br/>
+[2]: 2nd dimension<br/>
+[3]: 3rd dimension<br/>
+*/
+#define SLCArray_ALLOC(_size) SLCArray_Init \
+( \
+    (SLCArray_pt)malloc \
+    ( \
         SLCArray_LatestAllocated = \
-        SLC_ALIGN8(SLC_PROD4(_size) + sizeof(SLCArray_t))), \
-        _size)
+            SLC_ALIGN8 \
+                (SLC_PROD4EX(_size, SLC_I64_t) + sizeof(SLCArray_t)) \
+    ), _size \
+)
 
-#define SLCArray_ALLOCA(_size) SLCArray_Init( \
-    (SLCArray_pt)malloca( \
+/**
+\brief Create a new array. A memory block is allocated on
+    the stack frame. The memory block is automatically
+    destroyed when the current scope is exited.
+*/
+#define SLCArray_ALLOCA(_size) SLCArray_Init \
+( \
+    (SLCArray_pt)alloca \
+    ( \
         SLCArray_LatestAllocated = \
-        SLC_ALIGN8(SLC_PROD4(_size) + sizeof(SLCArray_t))), \
-        _size)
+            SLC_ALIGN8 \
+                (SLC_PROD4EX(_size, SLC_I64_t) + sizeof(SLCArray_t)) \
+    ), _size \
+)
 
 /**
 \brief safety wrapper of free() preventing from double free.

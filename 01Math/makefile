@@ -9,11 +9,13 @@ DEBUG_BINDIR = $(BINDIR)/debug
 RELEASE_BINDIR = $(BINDIR)/release
 DEBUG_OBJDIR = $(DEBUG_BINDIR)/o
 RELEASE_OBJDIR = $(RELEASE_BINDIR)/o
-DEBUG_OBJECTS = $(DEBUG_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o
-RELEASE_OBJECTS = $(RELEASE_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o
+DEBUG_OBJECTS = $(DEBUG_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o \
+	$(DEBUG_OBJDIR)/NLSL.o
+RELEASE_OBJECTS = $(RELEASE_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o \
+	$(RELEASE_OBJDIR)/NLSL.o
 DEBUG_TARGET = $(DEBUG_BINDIR)/01MathDone
 RELEASE_TARGET = $(RELEASE_BINDIR)/01MathDone
-HEADERS = $(INCDIR)/SLC/MiniBLAS.h $(INCDIR)/SLC/MiniLA.h
+HEADERS = $(INCDIR)/SLC/MiniBLAS.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/NLSL.h
 
 .PHONY	:	debug
 .PHONY	:	release
@@ -30,7 +32,11 @@ $(DEBUG_OBJDIR)/MiniBLAS.o	:	MiniBLAS.c $(INCDIR)/SLC/MiniBLAS.h
 	mkdir -p $(DEBUG_OBJDIR)
 	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
-$(DEBUG_OBJDIR)/MiniLA.o	:	MiniLA.c $(INCDIR)/SLC/MiniLA.h
+$(DEBUG_OBJDIR)/MiniLA.o	:	MiniLA.c $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/MiniBLAS.h
+	mkdir -p $(DEBUG_OBJDIR)
+	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
+
+$(DEBUG_OBJDIR)/NLSL.o	:	NLSL.c $(INCDIR)/SLC/NLSL.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/MiniBLAS.h
 	mkdir -p $(DEBUG_OBJDIR)
 	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
@@ -44,7 +50,11 @@ $(RELEASE_OBJDIR)/MiniBLAS.o	:	MiniBLAS.c $(INCDIR)/SLC/MiniBLAS.h
 	mkdir -p $(RELEASE_OBJDIR)
 	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
 
-$(RELEASE_OBJDIR)/MiniLA.o	:	MiniLA.c $(INCDIR)/SLC/MiniLA.h
+$(RELEASE_OBJDIR)/MiniLA.o	:	MiniLA.c $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/MiniBLAS.h
+	mkdir -p $(RELEASE_OBJDIR)
+	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
+
+$(RELEASE_OBJDIR)/NLSL.o	:	NLSL.c $(INCDIR)/SLC/NLSL.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/MiniBLAS.h
 	mkdir -p $(RELEASE_OBJDIR)
 	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
 
@@ -54,10 +64,19 @@ MiniBLAS.c	:	MiniBLAS.c.md
 MiniLA.c	:	MiniLA.c.md
 	$(SLCPP) $<
 
+NLSL.c	:	NLSL.c.md
+	$(SLCPP) $<
+
 $(INCDIR)/SLC/MiniBLAS.h	:	MiniBLAS.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/MiniLA.h	:	MiniLA.h.md
+	mkdir -p $(INCDIR)/SLC
+	$(SLCPP) $<
+
+$(INCDIR)/SLC/NLSL.h	:	NLSL.h.md
+	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 
 clean_debug	:

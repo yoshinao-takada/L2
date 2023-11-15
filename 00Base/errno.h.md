@@ -40,6 +40,7 @@ Author: Initials of revision authors
 #if !defined(_00BASE_ERRNO_H)
 #define _00BASE_ERRNO_H
 #include "SLC/Numbers.h"
+#include <errno.h>
 
 typedef SLC_I32_t SLC_errno_t;
 #define SLC_ESINGULAR   0x10000 /* matrix is near singular */

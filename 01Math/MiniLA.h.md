@@ -49,9 +49,9 @@ Author: Initials of revision authors
 ```
 ## Matrix specific accesors to SLCArray_t
 ```
-#define SLCMat_ROWS(_arrayPtr)          (_arrayPtr)->Control.I16[2]
-#define SLCMat_COLUMNS(_arrayPtr)       (_arrayPtr)->Control.I16[1]
-#define SLCMat_UNIT_SIZE(_arrayPtr)     (_arrayPtr)->Control.I16[0]
+#define SLCMat_ROWS(_arrayPtr)          (_arrayPtr)->Dimensions.I16[2]
+#define SLCMat_COLUMNS(_arrayPtr)       (_arrayPtr)->Dimensions.I16[1]
+#define SLCMat_UNIT_SIZE(_arrayPtr)     (_arrayPtr)->Dimensions.I16[0]
 ```
 ## Working matrix set for LSM overly determined equation solver
 ```

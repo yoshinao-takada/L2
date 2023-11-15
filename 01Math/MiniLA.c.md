@@ -45,9 +45,18 @@ Author: Initials of revision authors
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-// #define DEBUG_INV /* enable debug print in SLCMat_<VTYPE>Inv() (<VTYPE>=[r32 | r64 | c64 | c128]) */
-// #define DEBUG_SOLVE /* enable debug print in SLCMat_<VTYPE>Solve() (<VTYPE>=[r32 | r64 | c64 | c128]) */
-// #define DEBUG_SOLVEOD /* enable debug print in SLCMat_<VTYPE>SolveOD() (<VTYPE>=[r32 | r64 | c64 | c128]) */
+
+/* enable debug print in SLCMat_<VTYPE>Inv()
+ (<VTYPE>=[r32 | r64 | c64 | c128]) */
+// #define DEBUG_INV
+
+/* enable debug print in SLCMat_<VTYPE>Solve()
+ (<VTYPE>=[r32 | r64 | c64 | c128]) */
+// #define DEBUG_SOLVE
+
+/* enable debug print in SLCMat_<VTYPE>SolveOD()
+ (<VTYPE>=[r32 | r64 | c64 | c128]) */
+// #define DEBUG_SOLVEOD
 ```
 ## Working matrix set for LSM overly determined equation solver
 ```
@@ -58,9 +67,9 @@ SLC_errno_t SLCMat_InitLmsSolverMatSet(
     const SLC_I16_t unitsize = SLCMat_UNIT_SIZE(left);
     assert(SLCMat_UNIT_SIZE(right) == unitsize);
 
-    const SLC_4I16_t leftTSize = { unitsize, left->Control.I16[2], left->Control.I16[1], 1 };
+    const SLC_4I16_t leftTSize = { unitsize, left->Dimensions.I16[2], left->Dimensions.I16[1], 1 };
     const SLC_4I16_t leftTCLeftSize = { unitsize, SLCMat_COLUMNS(left), SLCMat_COLUMNS(left), 1 };
-    const SLC_4I16_t rightTSize = { unitsize, right->Control.I16[2], right->Control.I16[1], 1 };
+    const SLC_4I16_t rightTSize = { unitsize, right->Dimensions.I16[2], right->Dimensions.I16[1], 1 };
     const SLC_4I16_t leftTCRightSize = 
         { unitsize, SLCMat_COLUMNS(right), SLCMat_COLUMNS(left), 1 };
     const SLC_4I16_t workSize = 

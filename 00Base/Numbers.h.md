@@ -208,6 +208,8 @@ typedef const void*     SLC_16Void_cpt[16];
 #define SLC_PROD3(_a)           (_a)[0] * (_a)[1] * (_a)[2]
 #define SLC_PROD4(_a)           (_a)[0] * (_a)[1] * \
                                 (_a)[2] * (_a)[3]
+#define SLC_PROD4EX(_a,_T)      ((_T)((_a)[0]) * (_T)((_a)[1]) * \
+                                (_T)((_a)[2]) * (_T)((_a)[3]))
 #define SLC_COPY2(_dst, _src)   (_dst)[0] = (_src)[0]; \
                                 (_dst)[1] = (_src)[1]
 #define SLC_COPY3(_dst, _src)   (_dst)[0] = (_src)[0]; \
