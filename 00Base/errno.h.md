@@ -49,6 +49,9 @@ typedef SLC_I32_t SLC_errno_t;
 #define SLC_EINVAL      0x10003 /* Invalid operation (usually in objective function or Jacobian) */
 #define SLC_EVALMISMATCH    0x10004 /* value mismatch */
 #define SLC_EDIVBY0     0x10005 /* divide by 0 error */
+#define SLC_ENULLPTR    0x10006 /* NULL pointer error */
+#define SLC_ENOTNULLPTR 0x10007 /* NOT NULL when it is expectedlly cleared. */
+#define SLC_ENOTCLEARED SLC_ENOTNULLPTR
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.

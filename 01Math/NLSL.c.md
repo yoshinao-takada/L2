@@ -66,7 +66,8 @@ typedef void (*GnSolver_<VTYPE>Trace_f)(SLCGnSolver_<VTYPE>_cpt solver);
 /**
 \brief Discriminate where the solver is converged or not.
 */
-typedef bool (*GnSolver_<VTYPE>Converged_f)(SLCGnSlver_<VTYPE>_cpt solver);
+typedef SLCNlsl_State_t
+    (*GnSolver_<VTYPE>Converged_f)(SLCGnSolver_<VTYPE>_cpt solver);
 
 /**
 \brief Full definition of Gauss-Newton solver struct
@@ -85,17 +86,12 @@ struct SLCGnSolver_<VTYPE>
         j; // Jacobian
     SLCMat_LmsSolverMatSet_t wkset;
 
-    // operation state
+    // operation state and iteration counter
     SLCNlsl_State_t state;
-
-    // iteration counter
     SLC_<ITYPE>_t iter;
 
     // Convergence parameters
-    // L1 norm of deltaX and y
     SLC_<RTYPE>_t normDx, normY;
-
-    // convergence discriminator
     GnSolver_<VTYPE>Converged_f convDisc;
 
     // trace functions
@@ -111,52 +107,60 @@ struct SLCGnSolver_<VTYPE>
 #pragma region TRACE_FUNC_AND_CONV_DISC
 static void <VTYPE>TraceXY(SLCGnSolver_<VTYPE>_cpt solver)
 {
-    fprintf(solver->conf.base.TraceOut, "x = {");
+    fprintf(solver->conf.Base.TraceOut, "x = {");
     SLC_<VTYPE>_PRINTV(
-        solver->conf.base.TraceOut,
-        solver->x->data.<VTYPE>, solver->conf.base.cx);
-    fprintf(solver->conf.base.TraceOut, "}\ny = {");
+        solver->conf.Base.TraceOut,
+        solver->x->Data.<VTYPE>, solver->conf.Base.Cx);
+    fprintf(solver->conf.Base.TraceOut, "}\ny = {");
     SLC_<VTYPE>_PRINTV(
-        solver->conf.base.TraceOut,
-        solver->y->data.<VTYPE>, solver->conf.base.cy);
-    fprintf(solver->conf.base.TraceOut, "}\n");
+        solver->conf.Base.TraceOut,
+        solver->y->Data.<VTYPE>, solver->conf.Base.Cy);
+    fprintf(solver->conf.Base.TraceOut, "}\n");
 }
 
 static void <VTYPE>TraceJ(SLCGnSolver_<VTYPE>_cpt solver)
 {
-    SLCMat_<VTYPE>Print(solver->conf.base.TraceOut, "J = ",
+    SLCMat_<VTYPE>Print(solver->conf.Base.TraceOut, "J = ",
         solver->j, "");
 }
 
 static void <VTYPE>TraceNormDxY(SLCGnSolver_<VTYPE>_cpt solver)
 {
-    fprintf(solver->conf.base.TraceOut,
+    fprintf(solver->conf.Base.TraceOut,
         "normDx = %e, normY = %e\n", solver->normDx, solver->normY);
 }
 
 // a dummy function does nothing
 static void <VTYPE>TraceNone(SLCGnSolver_<VTYPE>_cpt solver) {}
 
-static bool <VTYPE>DiscriminateDx(SLCGnSolver_<VTYPE>_cpt solver)
+static SLCNlsl_State_t
+<VTYPE>DiscriminateDx(SLCGnSolver_<VTYPE>_cpt solver)
 {
-    return solver->normDx < solver->conf.base.NormDxMax;
+    return solver->normDx < solver->conf.Base.NormDxMax ?
+        SLCNlsl_State_DX_CONVERGED : SLCNlsl_State_RUNNING;
 }
 
-static bool <VTYPE>DiscriminateY(SLCGnSolver_<VTYPE>_cpt solver)
+static SLCNlsl_State_t
+<VTYPE>DiscriminateY(SLCGnSolver_<VTYPE>_cpt solver)
 {
-    return solver->normY < solver->conf.base.NormYMax;
+    return solver->normY < solver->conf.Base.NormYMax ?
+        SLCNlsl_State_Y_CONVERGED : SLCNlsl_State_RUNNING;
 }
 
-static bool <VTYPE>DiscriminateBoth(SLCGnSolver_<VTYPE>_cpt solver)
+static SLCNlsl_State_t
+<VTYPE>DiscriminateBoth(SLCGnSolver_<VTYPE>_cpt solver)
 {
     return
-        (solver->normDx < solver->conf.base.NormDxMax) &&
-        (solver->normY < solver->conf.base.NormYMax);
+        (solver->normDx < solver->conf.Base.NormDxMax) &&
+        (solver->normY < solver->conf.Base.NormYMax) ?
+        SLCNlsl_State_BOTH_CONVERGED : SLCNlsl_State_RUNNING;
 }
 #pragma endregion TRACE_FUNC_AND_CONV_DISC
 ```
 ## Initializer and Momory Management
+### Low Level Memory Management
 ```
+#pragma region INITIALIZER
 static void <VTYPE>FreeArrays(SLCGnSolver_<VTYPE>_pt solver)
 {
     SLC_SAFE_FREE(&solver->x);
@@ -171,8 +175,8 @@ static void <VTYPE>FreeArrays(SLCGnSolver_<VTYPE>_pt solver)
 static SLC_errno_t <VTYPE>AllocArrays(SLCGnSolver_<VTYPE>_pt solver)
 {
     const SLC_I16_t
-        cx = solver->conf.base.Cx,
-        cy = solver->conf.base.Cy;
+        cx = solver->conf.Base.Cx,
+        cy = solver->conf.Base.Cy;
     const SLC_I16_t usize = sizeof(SLC_<VTYPE>_t);
     const SLC_4I16_t
         xsize = { usize, 1, cx, 1 },
@@ -181,20 +185,20 @@ static SLC_errno_t <VTYPE>AllocArrays(SLCGnSolver_<VTYPE>_pt solver)
     SLC_errno_t err = EXIT_SUCCESS;
     do
     {
-        if (!(solver->x = SLCMat_ALLOC(xsize)) ||
-            !(solver->deltaX = SLCMat_ALLOC(xsize)) ||
-            !(solver->y = SLCMat_ALLOC(ysize)) ||
-            !(solver->negy = SLCMat_ALLOC(ysize)) ||
-            !(solver->jcolbuf = SLCMat_ALLOC(ysize)) ||
-            !(solvre->j = SLCMat_ALLOC(jsize)))
+        if (!(solver->x = SLCArray_ALLOC(xsize)) ||
+            !(solver->deltaX = SLCArray_ALLOC(xsize)) ||
+            !(solver->y = SLCArray_ALLOC(ysize)) ||
+            !(solver->negy = SLCArray_ALLOC(ysize)) ||
+            !(solver->jcolbuf = SLCArray_ALLOC(ysize)) ||
+            !(solver->j = SLCArray_ALLOC(jsize)))
         {
             err = ENOMEM;
             break;
         }
 
         if (EXIT_SUCCESS != 
-            err = SLCMat_SLCMat_InitLmsSolverMatSet(
-            &solver->wkset, solver->j, solver->y))
+            (err = SLCMat_InitLmsSolverMatSet(
+            &solver->wkset, solver->j, solver->y)))
         {
             break;
         }
@@ -206,7 +210,9 @@ static SLC_errno_t <VTYPE>AllocArrays(SLCGnSolver_<VTYPE>_pt solver)
     }
     return err;
 }
-
+```
+### Memory Management APIs
+```
 SLCGnSolver_<VTYPE>_pt
 SLCGnSolver_<VTYPE>New(SLC_<ITYPE>_t cx, SLC_<ITYPE>_t cy)
 {
@@ -228,19 +234,19 @@ SLCGnSolver_<VTYPE>New(SLC_<ITYPE>_t cx, SLC_<ITYPE>_t cy)
         }
         memset(p, 0, allocSize);
         p += headSize;
-        pobj->conf.base.XInitial = (SLC_<VTYPE>_t*)p;
+        pobj->conf.Base.XInitial = (SLC_<VTYPE>_t*)p;
         p += xInitialSize;
         pobj->conf.Jacobian = (SLCNlsl_<VTYPE>Gvv_f*)p;
-        pobj->conf.base.Cx = cx;
-        pobj->conf.base.Cy = cy;
-        pobj->conf.base.MaxIter = 10;
-        pobj->conf.base.ConvergenceConditions
-            = SLCNlsl_ConvergencCondition_DX;
-        pobj->conf.base.NormDxMax = pobj->conf.base.NormYMax
+        pobj->conf.Base.Cx = cx;
+        pobj->conf.Base.Cy = cy;
+        pobj->conf.Base.MaxIter = 10;
+        pobj->conf.Base.ConvergenceCondition
+            = SLCNlsl_ConvergenceCondition_DX;
+        pobj->conf.Base.NormDxMax = pobj->conf.Base.NormYMax
             = SLC_<VTYPE>_STDTOL;
-        pobj->conf.base.Objective = NULL;
-        pobj->conf.base.Context = NULL;
-        pobj->conf.base.TraceOut = NULL;
+        pobj->conf.Base.Objective = NULL;
+        pobj->conf.Base.Context = NULL;
+        pobj->conf.Base.TraceOut = NULL;
 
         // set trace functions and convergence discriminator
         pobj->traceXY = pobj->traceJ = pobj->traceNormDxY
@@ -250,13 +256,12 @@ SLCGnSolver_<VTYPE>New(SLC_<ITYPE>_t cx, SLC_<ITYPE>_t cy)
         // clear XInital and Jacobian
         for (SLC_<ITYPE>_t i = 0; i < cx; i++)
         {
-            pobj->conf.base.XInitial[i] = SLC_<VTYPE>_0;
+            pobj->conf.Base.XInitial[i] = SLC_<VTYPE>_0;
             pobj->conf.Jacobian[i] = NULL;
         }
-
         pobj->state = SLCNlsl_State_CREATED;
         pobj->iter = 0;
-
+        // Initialize internal working matrices
         err = <VTYPE>AllocArrays(pobj);
     }
     while (0);
@@ -266,32 +271,194 @@ SLCGnSolver_<VTYPE>New(SLC_<ITYPE>_t cx, SLC_<ITYPE>_t cy)
     }
     return pobj;
 }
-#pragmaa region INITIALIZER
-#pragmaa endregion INITIALIZER
+
+void SLCGnSolver_<VTYPE>Delete(SLCGnSolver_<VTYPE>_pt* ppsolver)
+{
+    if (ppsolver && *ppsolver)
+    {
+        <VTYPE>FreeArrays(*ppsolver);
+        SLC_SAFE_FREE(ppsolver);
+    }
+}
+
+SLCGnSolver_<VTYPE>Conf_pt
+SLCGnSolver_<VTYPE>Conf(SLCGnSolver_<VTYPE>_pt solver)
+{
+    return &solver->conf;
+}
 ```
+### Initializer Low Level Utility Functions
+```
+static void <VTYPE>SetTraceFunctions(SLCGnSolver_<VTYPE>_pt solver)
+{
+    if (solver->conf.Base.TraceOut)
+    {
+        solver->traceXY = <VTYPE>TraceXY;
+        solver->traceJ = <VTYPE>TraceJ;
+        solver->traceNormDxY = <VTYPE>TraceNormDxY;
+    }
+    else
+    {
+        solver->traceXY = solver->traceJ = solver->traceNormDxY =
+            <VTYPE>TraceNone;
+    }
+}
+
+static void
+<VTYPE>SetConvergenceDiscriminator(SLCGnSolver_<VTYPE>_pt solver)
+{
+    switch (solver->conf.Base.ConvergenceCondition)
+    {
+        case SLCNlsl_ConvergenceCondition_DX:
+            solver->convDisc = <VTYPE>DiscriminateDx;
+            break;
+        case SLCNlsl_ConvergenceCondition_Y:
+            solver->convDisc = <VTYPE>DiscriminateY;
+            break;
+        case SLCNlsl_ConvergenceCondition_BOTH:
+            solver->convDisc = <VTYPE>DiscriminateBoth;
+            break;
+        default:
+            assert(false);
+    }
+}
+#pragma endregion INITIALIZER
+```
+### 
 ## Public Functions
 ```
 #pragma region PUBLIC_FUNCTIONS
+SLC_errno_t
+SLCGnSolver_<VTYPE>Init(SLCGnSolver_<VTYPE>_pt solver)
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    do
+    {
+        // check null pointer
+        bool isNull = !(solver->conf.Base.Context)
+            || !(solver->conf.Base.Objective);
+        for (SLC_<ITYPE>_t i = 0; i < solver->conf.Base.Cx; i++)
+        {
+            isNull |= !(solver->conf.Jacobian[i]);
+        }
+        if (isNull)
+        {
+            err = SLC_ENULLPTR;
+            break;
+        }
+        <VTYPE>SetTraceFunctions(solver);
+        <VTYPE>SetConvergenceDiscriminator(solver);
+        // copy XInitial to x
+        SLC_<VTYPE>Copy(solver->x->Data.<VTYPE>, 1,
+            solver->conf.Base.XInitial, 1, solver->conf.Base.Cx);
+        solver->state = SLCNlsl_State_INITIALIZED;
+    }
+    while (0);
+    return err;
+}
+
+static void <VTYPE>CalcJacobian(SLCGnSolver_<VTYPE>_pt solver)
+{
+    SLC_<ITYPE>_t cx = solver->conf.Base.Cx;
+    SLC_<ITYPE>_t cy = solver->conf.Base.Cy;
+    SLC_<VTYPE>_t* jelement = solver->j->Data.<VTYPE>;
+    for (SLC_<ITYPE>_t column = 0; column < cx; column++, jelement++)
+    {
+        if (EXIT_SUCCESS != solver->conf.Jacobian[column](
+            solver->jcolbuf->Data.<VTYPE>, cy,
+            solver->x->Data.<VTYPE>, cx,
+            solver->conf.Base.Context))
+        {
+            solver->state = SLCNlsl_State_ERROR_ABORT;
+            break;
+        }
+        SLC_<VTYPE>Copy(
+            jelement, cx, solver->jcolbuf->Data.<VTYPE>, 1, cy);
+    }
+    solver->traceJ(solver);
+}
+
+static void <VTYPE>CalcDeltaX(SLCGnSolver_<VTYPE>_pt solver)
+{
+    // negate y into negy.
+    for (SLC_<ITYPE>_t i = 0; i < solver->conf.Base.Cy; i++)
+    {
+        solver->negy->Data.<VTYPE>[i] = -solver->y->Data.<VTYPE>[i];
+    }
+    // solve linear equation -Y = J * deltaX
+    SLC_errno_t err = SLCMat_<VTYPE>SolveOd(
+        solver->deltaX, solver->j, solver->negy, &solver->wkset);
+    if (EXIT_SUCCESS != err)
+    {
+        solver->state = SLCNlsl_State_ERROR_ABORT;
+    }
+}
+
+static void <VTYPE>CalcNorm(SLCGnSolver_<VTYPE>_pt solver)
+{
+    solver->normDx = SLCBLAS_<VTYPE>AbsSum(
+        solver->deltaX->Data.<VTYPE>, solver->conf.Base.Cx);
+    solver->normY = SLCBLAS_<VTYPE>AbsSum(
+        solver->y->Data.<VTYPE>, solver->conf.Base.Cy);
+    solver->traceNormDxY(solver);
+}
+
+static void <VTYPE>CalcObjective(SLCGnSolver_<VTYPE>_pt solver)
+{
+    SLC_errno_t err = solver->conf.Base.Objective(
+        solver->y->Data.<VTYPE>, solver->conf.Base.Cy,
+        solver->x->Data.<VTYPE>, solver->conf.Base.Cx,
+        solver->conf.Base.Context);
+    if (EXIT_SUCCESS != err)
+    {
+        solver->state = SLCNlsl_State_ERROR_ABORT;
+    }
+    solver->traceXY(solver);
+}
+
+SLC_errno_t SLCGnSolver_<VTYPE>Execute(SLCGnSolver_<VTYPE>_pt solver)
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    solver->state = SLCNlsl_State_RUNNING;
+    for (; solver->iter < solver->conf.Base.MaxIter &&
+        solver->state == SLCNlsl_State_RUNNING; solver->iter++)
+    {
+        // calculate objective function
+        <VTYPE>CalcObjective(solver);
+        if (solver->state != SLCNlsl_State_RUNNING) continue;
+        // calculate Jacobian
+        <VTYPE>CalcJacobian(solver);
+        if (solver->state != SLCNlsl_State_RUNNING) continue;
+        <VTYPE>CalcDeltaX(solver);
+        if (solver->state != SLCNlsl_State_RUNNING) continue;
+        solver->state = solver->convDisc(solver);
+    }
+    if (solver->state == SLCNlsl_State_RUNNING)
+    {
+        solver->state = SLCNlsl_State_ITER_LIMIT;
+    }
+    return err;
+}
 #pragma endregion PUBLIC_FUNCTIONS
 ```
 ## Public Functions; Accessors
 ```
-const SLC_<VTYPE>_t* SLCGnSolver_<VTYPE>X(SLCGnSolver_<TYPE>_cpt solver)
+const SLC_<VTYPE>_t* SLCGnSolver_<VTYPE>X(SLCGnSolver_<VTYPE>_cpt solver)
 {
-    return solver->x.Data.<VTYPE>;
+    return solver->x->Data.<VTYPE>;
 }
 
-const SLC_<VTYPE>_t* SLCGnSolver_<VTYPE>Y(SLCGnSolver_<TYPE>_cpt solver)
+const SLC_<VTYPE>_t* SLCGnSolver_<VTYPE>Y(SLCGnSolver_<VTYPE>_cpt solver)
 {
-    return solver->y.Data.<VTYPE>;
+    return solver->y->Data.<VTYPE>;
 }
 
-SLC_<VTYPE>_t SLCGnSolver_<VTYPE>NormDx(SLCGnSolver_<TYPE>_cpt solver)
+SLC_<RTYPE>_t SLCGnSolver_<VTYPE>NormDx(SLCGnSolver_<VTYPE>_cpt solver)
 {
     return solver->normDx;
 }
 
-SLC_<VTYPE>_t SLCGnSolver_<VTYPE>NormY(SLCGnSolver_<VTYPE>_cpt solver)
+SLC_<RTYPE>_t SLCGnSolver_<VTYPE>NormY(SLCGnSolver_<VTYPE>_cpt solver)
 {
     return solver->normY;
 }

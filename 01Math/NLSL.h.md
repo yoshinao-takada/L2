@@ -55,14 +55,14 @@ typedef enum {
     SLCNlsl_State_Y_CONVERGED, // stopped by convergence of normY
     SLCNlsl_State_BOTH_CONVERGED, 
         // stopped by convergence of both of normDX and normY
-    SLCNlsl_State_ERR_ABORT, // stopped by error in objective or Jacobian
+    SLCNlsl_State_ERROR_ABORT, // stopped by error in objective or Jacobian
 } SLCNlsl_State_t;
 
 // Convergence conditions of solvers.
 typedef enum {
-    SLCNlsl_ConvergencCondition_DX = 1, // x satisfy criterion
-    SLCNlsl_ConvergencCondition_Y = 2, // y satisfy criterion
-    SLCNlsl_ConvergencCondition_BOTH = 3, // both of x and y satisfy criteria
+    SLCNlsl_ConvergenceCondition_DX = 1, // x satisfy criterion
+    SLCNlsl_ConvergenceCondition_Y = 2, // y satisfy criterion
+    SLCNlsl_ConvergenceCondition_BOTH = 3, // both of x and y satisfy criteria
 } SLCNlsl_ConvergenceCondition_t;
 ```
 # Generic

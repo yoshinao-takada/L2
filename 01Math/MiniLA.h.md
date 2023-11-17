@@ -216,6 +216,11 @@ SLC_errno_t SLCMat_<VTYPE>SolveOd(
 #pragma region <VTYPE>_QR_DECOMPOSITION
 SLC_errno_t SLCMat_<VTYPE>Qrd(SLCArray_pt dst, SLCArray_pt src);
 #pragma endregion <VTYPE>_QR_DECOMPOSITION
+```
+## Print a matrix
+```
+void SLCMat_<VTYPE>Print(
+    FILE* out, const char* header, SLCArray_cpt mat, const char* footer);
 #pragma endregion <VTYPE>_functions
 ```
 # Foot

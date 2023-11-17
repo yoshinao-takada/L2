@@ -664,7 +664,23 @@ SLC_errno_t SLCMat_<VTYPE>SolveOd(SLCArray_pt dst, SLCArray_cpt left,
 
 #pragma endregion <VTYPE>_LINEAR_EQUATION_SOLVER
 ```
+## QR Decomposition
 ```
+```
+## Print a Matrix
+```
+void SLCMat_<VTYPE>Print(
+    FILE* out, const char* header, SLCArray_cpt mat, const char* footer)
+{
+    fprintf(out, "%s: rows=%d, columns=%d\n", header,
+        mat->Dimensions.I16[2], mat->Dimensions.I16[1]);
+    const SLC_<VTYPE>_t *e = mat->Data.<VTYPE>;
+    for (SLC_I16_t row = 0; row < mat->Dimensions.I16[2]; row++)
+    {
+        SLC_<VTYPE>_PRINTVN(out, e, mat->Dimensions.I16[1]);
+    }
+    fprintf(out, footer);
+}
 #undef DBG_PRINT_MAT
 #undef DBG_INV_PRINT_MAT
 #undef DBG_SOLVE_PRINT_MAT
