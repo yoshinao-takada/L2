@@ -1,7 +1,7 @@
 # Control
 ```
 {
-    "OUT": "MiniLAUT.c",
+    "OUT": "../include/SLC/Geom.h",
     "VTYPES": ["R32", "R64", "C64", "C128"],
     "RTYPES": ["R32", "R64", "R32", "R64"],
     "ITYPE": "I32"
@@ -25,8 +25,8 @@ All source files and data files are protected by the license term of
 `LICENSE` in the project root directory.
 
 File description
-File: Template.md
-Description: A template file for 'slcpp.js' preprocessor input.
+File: Geom.h
+Description: Euclidian and projection geometry functions
 
 Revision history
 Rev.     Date   Author  Description
@@ -37,10 +37,11 @@ Date format: YYMMDD (YY: lower 2 digits of dominical year,
              MM:month(1..12), DD: day of month (1..31))
 Author: Initials of revision authors
 */
+#if !defined(_01MATH_GEOM_H)
+#define _01MATH_GEOM_H
 #include "SLC/Log.h"
-#include "SLC/MiniBLAS.h"
 #include "SLC/MiniLA.h"
-#include <stdlib.h>
+#include "SLC/NLSL.h"
 #include <stdio.h>
 ```
 # Generic
@@ -53,15 +54,5 @@ Generic definitions of base number specific functions, types, etc.
 Foot contains definitions common to all base number types.
 Foot is placed after all generic code are placed.
 ```
-SLC_errno_t MiniLAUT()
-{
-    SLC_errno_t err = EXIT_SUCCESS;
-    do
-    {
-
-    }
-    while (0);
-    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
-    return err;
-}
+#endif /* _01MATH_GEOM_H */
 ```

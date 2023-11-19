@@ -1,7 +1,7 @@
 # Control
 ```
 {
-    "OUT": "MiniLAUT.c",
+    "OUT": "NLSLUT.c",
     "VTYPES": ["R32", "R64", "C64", "C128"],
     "RTYPES": ["R32", "R64", "R32", "R64"],
     "ITYPE": "I32"
@@ -25,8 +25,9 @@ All source files and data files are protected by the license term of
 `LICENSE` in the project root directory.
 
 File description
-File: Template.md
-Description: A template file for 'slcpp.js' preprocessor input.
+File: NLSLUT.c
+Description: Test functions for NLSL.c (Continuous nonlinear equation
+    solver)
 
 Revision history
 Rev.     Date   Author  Description
@@ -40,6 +41,7 @@ Author: Initials of revision authors
 #include "SLC/Log.h"
 #include "SLC/MiniBLAS.h"
 #include "SLC/MiniLA.h"
+#include "SLC/NLSL.h"
 #include <stdlib.h>
 #include <stdio.h>
 ```
@@ -53,7 +55,7 @@ Generic definitions of base number specific functions, types, etc.
 Foot contains definitions common to all base number types.
 Foot is placed after all generic code are placed.
 ```
-SLC_errno_t MiniLAUT()
+SLC_errno_t NLSLUT()
 {
     SLC_errno_t err = EXIT_SUCCESS;
     do

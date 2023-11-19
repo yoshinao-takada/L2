@@ -39,6 +39,7 @@ Date format: YYMMDD (YY: lower 2 digits of dominical year,
 Author: Initials of revision authors
 */
 #if !defined(_00BASE_LOG_H)
+#define _00BASE_LOG_H
 #include "SLC/Numbers.h"
 #include "SLC/errno.h"
 #include "SLC/ExIO.h"
@@ -233,6 +234,30 @@ typedef SLC_errno_t (*SLCTest_Method2_f)(SLCTest_Args_cpt args);
 # Generic
 Generic definitions of base number specific functions, types, etc.
 ```
+/**
+\brief number mismatch error log in indexed loop
+    with two same type number arrays
+\param _err [in] error code
+\param _name0 [in] name of the 1st array
+\param _name1 [in] name of the 2nd array
+\param _index [in] index where the error occured.
+\param _array0 [in] pointer to the 1st raw array
+\param _array1 [in] pointer to the 2nd raw array
+\param _file [in] source filename, usually __FILE__
+\param _func [in] source function name, usually __FUNCTION__
+\param _line [in] source line, usually __LINE__
+*/
+#define SLCLog_<VTYPE>ERR_ARRAY_MISMATCH( \
+_err, _name0, _name1, _index, _array0, _array1, _file, _func, _line) \
+if (_err && SLCLog_Sink) \
+{ \
+    SLCLog_ERR(_err, "Number mismatch, %s[%d]=", \
+        _name0, _index); \
+    SLC_<VTYPE>_PRINT(SLCLog_Sink, _array0[_index]); \
+    fprintf(SLCLog_Sink, ", %s[%d]=", _name1, _index); \
+    SLC_<VTYPE>_PRINT(SLCLog_Sink, _array1[_index]); \
+    fprintf(SLCLog_Sink, " @ %s,%s,%d\n", _file, _func, _line); \
+}
 ```
 # Foot
 Foot contains definitions common to all base number types.

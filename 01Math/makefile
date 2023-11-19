@@ -10,12 +10,13 @@ RELEASE_BINDIR = $(BINDIR)/release
 DEBUG_OBJDIR = $(DEBUG_BINDIR)/o
 RELEASE_OBJDIR = $(RELEASE_BINDIR)/o
 DEBUG_OBJECTS = $(DEBUG_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o \
-	$(DEBUG_OBJDIR)/NLSL.o
+	$(DEBUG_OBJDIR)/NLSL.o $(DEBUG_OBJDIR)/Geom.o
 RELEASE_OBJECTS = $(RELEASE_OBJDIR)/MiniBLAS.o $(DEBUG_OBJDIR)/MiniLA.o \
-	$(RELEASE_OBJDIR)/NLSL.o
+	$(RELEASE_OBJDIR)/NLSL.o $(RELEASE_OBJDIR)/Geom.o
 DEBUG_TARGET = $(DEBUG_BINDIR)/01MathDone
 RELEASE_TARGET = $(RELEASE_BINDIR)/01MathDone
-HEADERS = $(INCDIR)/SLC/MiniBLAS.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/NLSL.h
+HEADERS = $(INCDIR)/SLC/MiniBLAS.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/NLSL.h \
+	$(INCDIR)/SLC/Geom.h
 
 .PHONY	:	debug
 .PHONY	:	release
@@ -40,6 +41,10 @@ $(DEBUG_OBJDIR)/NLSL.o	:	NLSL.c $(INCDIR)/SLC/NLSL.h $(INCDIR)/SLC/MiniLA.h $(IN
 	mkdir -p $(DEBUG_OBJDIR)
 	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
+$(DEBUG_OBJDIR)/Geom.o	:	Geom.c $(INCDIR)/SLC/Geom.h $(INCDIR)/SLC/NLSL.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/MiniBLAS.h
+	mkdir -p $(DEBUG_OBJDIR)
+	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
+
 release	:	$(RELEASE_TARGET)
 
 $(RELEASE_TARGET)	:	$(RELEASE_OBJECTS)
@@ -58,6 +63,10 @@ $(RELEASE_OBJDIR)/NLSL.o	:	NLSL.c $(INCDIR)/SLC/NLSL.h $(INCDIR)/SLC/MiniLA.h $(
 	mkdir -p $(RELEASE_OBJDIR)
 	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
 
+$(RELEASE_OBJDIR)/Geom.o	:	Geom.c $(INCDIR)/SLC/Geom.h $(INCDIR)/SLC/NLSL.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/MiniBLAS.h
+	mkdir -p $(RELEASE_OBJDIR)
+	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
+
 MiniBLAS.c	:	MiniBLAS.c.md
 	$(SLCPP) $<
 
@@ -65,6 +74,9 @@ MiniLA.c	:	MiniLA.c.md
 	$(SLCPP) $<
 
 NLSL.c	:	NLSL.c.md
+	$(SLCPP) $<
+
+Geom.c	:	Geom.c.md
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/MiniBLAS.h	:	MiniBLAS.h.md
@@ -76,6 +88,10 @@ $(INCDIR)/SLC/MiniLA.h	:	MiniLA.h.md
 	$(SLCPP) $<
 
 $(INCDIR)/SLC/NLSL.h	:	NLSL.h.md
+	mkdir -p $(INCDIR)/SLC
+	$(SLCPP) $<
+
+$(INCDIR)/SLC/Geom.h	:	Geom.h.md
 	mkdir -p $(INCDIR)/SLC
 	$(SLCPP) $<
 

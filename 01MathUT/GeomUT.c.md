@@ -38,7 +38,11 @@ Date format: YYMMDD (YY: lower 2 digits of dominical year,
 Author: Initials of revision authors
 */
 #include "SLC/Log.h"
+#include "SLC/MiniBLAS.h"
+#include "SLC/MiniLA.h"
+#include "SLC/NLSL.h"
 #include "SLC/Geom.h"
+#include <stdlib.h>
 ```
 # Generic
 Generic definitions of base number specific functions, types, etc.

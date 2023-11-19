@@ -32,57 +32,48 @@ HEADERS = $(INCDIR)/SLC/MiniBLAS.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/NLSL.h
 #---------------DEBUG---------------------
 debug	:	$(DEBUG_TARGET)
 
-$(DEBUG_TARGET)	:	$(DEBUG_OBJECTS)
+$(DEBUG_TARGET)	:	$(DEBUG_OBJECTS) $(DEBUG_TEST_OBJECTS)
 	mkdir -p $(DEBUG_BINDIR)
 	$(CC) -o $@ $^ -lm -lpthread
 
 $(DEBUG_OBJDIR)/01MathUT.o	:	01MathUT.c
 	mkdir -p $(DEBUG_OBJDIR)
-	$(CC) $(DEBUG_CCFLAGS) -o $@ 
+	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
 $(DEBUG_OBJDIR)/MiniBLASUT.o	:	MiniBLASUT.c
 	mkdir -p $(DEBUG_OBJDIR)
-	$(CC) $(DEBUG_CCFLAGS) -o $@ 
+	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
 $(DEBUG_OBJDIR)/MiniLAUT.o	:	MiniLAUT.c
 	mkdir -p $(DEBUG_OBJDIR)
-	$(CC) $(DEBUG_CCFLAGS) -o $@ 
+	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
 $(DEBUG_OBJDIR)/NLSLUT.o	:	NLSLUT.c
 	mkdir -p $(DEBUG_OBJDIR)
-	$(CC) $(DEBUG_CCFGeomGS) -o $@ 
+	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
 $(DEBUG_OBJDIR)/GeomUT.o	:	GeomUT.c
 	mkdir -p $(DEBUG_OBJDIR)
-	$(CC) $(DEBUG_CCFLAGS) -o $@ 
+	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 #---------------RELEASE---------------------
 release	:	$(RELEASE_TARGET)
 
-$(RELEASE_TARGET)	:	$(RELEASE_OBJECTS)
+$(RELEASE_TARGET)	:	$(RELEASE_OBJECTS) $(RELEASE_TEST_OBJECTS)
 	mkdir -p $(RELEASE_BINDIR)
 	$(CC) -o $@ $^ -lm -lpthread
 
 $(RELEASE_OBJDIR)/01MathUT.o	:	01MathUT.c
 	mkdir -p $(RELEASE_OBJDIR)
-	$(CC) $(RELEASE_CCFLAGS) -o $@ 
+	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
 
 $(RELEASE_OBJDIR)/MiniBLASUT.o	:	MiniBLASUT.c
 	mkdir -p $(RELEASE_OBJDIR)
-	$(CC) $(RELEASE_CCFLAGS) -o $@ 
+	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
 
 $(RELEASE_OBJDIR)/MiniLAUT.o	:	MiniLAUT.c
 	mkdir -p $(RELEASE_OBJDIR)
-	$(CC) $(RELEASE_CCFLAGS) -o $@ 
-
-$(RELEASE_OBJDIR)/NLSLUT.o	:	NLSLUT.c
-	mkdir -p $(RELEASE_OBJDIR)
-	$(CC) $(RELEASE_CCFGeomGS) -o $@ 
-
-$(RELEASE_OBJDIR)/GeomUT.o	:	GeomUT.c
-	mkdir -p $(RELEASE_OBJDIR)
-	$(CC) $(RELEASE_CCFLAGS) -o $@ 
-
-#---------------CLEAN---------------------
+	$(CC) $(RELEASE_CCFLAGS) -o $@ $<
+#---------- .c source file -------------------
 01MathUT.c	:	01MathUT.c.md
 	$(SLCPP) $<
 
@@ -97,14 +88,13 @@ NLSLUT.c	:	NLSLUT.c.md
 
 GeomUT.c	:	GeomUT.c.md
 	$(SLCPP) $<
-
+#---------------CLEAN---------------------
 clean_debug	:
-	rm -f $(DEBUG_TARGET)
-	rm -f $(DEBUG_OBJECTS)
-	rm -f *.c
-
+	rm -f $(DEBUG_TARGET) $(DEBUG_OBJECTS) *.c
 
 clean_release	:
-	rm -f $(RELEASE_TARGET)
-	rm -f $(RELEASE_OBJECTS)
-	rm -f *.c
+	rm -f $(RELEASE_TARGET) $(RELEASE_OBJECTS) *.c
+
+clean	:
+	$(MAKE) clean_debug
+	$(MAKE) clean_release

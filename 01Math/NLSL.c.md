@@ -431,6 +431,12 @@ SLC_errno_t SLCGnSolver_<VTYPE>Execute(SLCGnSolver_<VTYPE>_pt solver)
         if (solver->state != SLCNlsl_State_RUNNING) continue;
         <VTYPE>CalcDeltaX(solver);
         if (solver->state != SLCNlsl_State_RUNNING) continue;
+        if (solver->state != SLCNlsl_State_ERROR_ABORT)
+        {
+            SLCBLAS_<VTYPE>AddAss(solver->x->Data.<VTYPE>,
+                solver->deltaX->Data.<VTYPE>, solver->conf.Base.Cx);
+        }
+        <VTYPE>CalcNorm(solver);
         solver->state = solver->convDisc(solver);
     }
     if (solver->state == SLCNlsl_State_RUNNING)

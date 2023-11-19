@@ -38,6 +38,8 @@ Date format: YYMMDD (YY: lower 2 digits of dominical year,
 Author: Initials of revision authors
 */
 #include "SLC/Log.h"
+#include <stdlib.h>
+#include <stdio.h>
 SLC_errno_t MiniBLASUT();
 SLC_errno_t MiniLAUT();
 SLC_errno_t NLSLUT();
@@ -54,6 +56,7 @@ Foot is placed after all generic code are placed.
 int main()
 {
     SLC_errno_t err = EXIT_SUCCESS;
+    SLCLog_Sink = stderr;
     do
     {
         SLCTest_RUN_ERROR_BREAK(
