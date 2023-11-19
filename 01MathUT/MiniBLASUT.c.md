@@ -59,7 +59,7 @@ static const SLC_R32_t
 // scale0 * src0 + scale1 * src1
     R32_SCALE0_SRC0_PLUS_SCALE1_SRC1[] = { -34.7f, -25.5f, 0.0f, 21.8f, 38.4f },
 // { src0[i]*src1[i] (i = 0..4) }
-    R32_SRC0_SRC1_ebe[] = { -28.8f, -12.0f, 0.0f, -12.0f, -28.8f },
+    R32_SRC0_SRC1_EBE[] = { -28.8f, -12.0f, 0.0f, -12.0f, -28.8f },
 // scale0 * src0
     R32_SCALE0_SRC0[] = { -2.7f, -1.5f, 0.0f, 1.8f, 2.4f },
 // conj(src0)
@@ -86,7 +86,7 @@ static const SLC_R64_t
 // scale0 * src0 + scale1 * src1
     R64_SCALE0_SRC0_PLUS_SCALE1_SRC1[] = { -34.7, -25.5, 0.0, 21.8, 38.4 },
 // { src0[i]*src1[i] (i = 0..4) }
-    R64_SRC0_SRC1_ebe[] = { -28.8, -12.0, 0.0, -12.0, -28.8 },
+    R64_SRC0_SRC1_EBE[] = { -28.8, -12.0, 0.0, -12.0, -28.8 },
 // scale0 * src0
     R64_SCALE0_SRC0[] = { -2.7, -1.5, 0.0, 1.8, 2.4 },
 // conj(src0)
@@ -113,7 +113,7 @@ static  const SLC_C64_t
 // scale0 * src0 + scale1 * src1
     C64_SCALE0_SRC0_PLUS_SCALE1_SRC1[] = { CMPLXF(-54.7f,2.1f), CMPLXF(17.4f,21.8f), CMPLXF(10.8f,-64.9f) },
 // { src0[i]*src1[i] (i = 0..4) }
-    C64_SRC0_SRC1_ebe[] = { CMPLXF(-16.8f,-37.6f), CMPLXF(12.0f,0.0f), CMPLXF(0.0f,58.0f) },
+    C64_SRC0_SRC1_EBE[] = { CMPLXF(-16.8f,-37.6f), CMPLXF(12.0f,0.0f), CMPLXF(0.0f,58.0f) },
 // scale0 * src0
     C64_SCALE0_SRC0[] = { CMPLXF(-4.7f,2.1f), CMPLXF(2.4f,1.8f), CMPLXF(-1.2f,-5.9f) },
 // conj(src0)
@@ -142,7 +142,7 @@ static  const SLC_C128_t
 // scale0 * src0 + scale1 * src1
     C128_SCALE0_SRC0_PLUS_SCALE1_SRC1[] = { CMPLX(-54.7,2.1), CMPLX(17.4,21.8), CMPLX(10.8,-64.9) },
 // { src0[i]*src1[i] (i = 0..4) }
-    C128_SRC0_SRC1_ebe[] = { CMPLX(-16.8,-37.6), CMPLX(12.0,0.0), CMPLX(0.0,58.0) },
+    C128_SRC0_SRC1_EBE[] = { CMPLX(-16.8,-37.6), CMPLX(12.0,0.0), CMPLX(0.0,58.0) },
 // scale0 * src0
     C128_SCALE0_SRC0[] = { CMPLX(-4.7,2.1), CMPLX(2.4,1.8), CMPLX(-1.2,-5.9) },
 // conj(src0)
@@ -214,6 +214,179 @@ static SLC_errno_t <VTYPE>ScaleAssUT()
     SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
     return err;
 }
+
+static SLC_errno_t <VTYPE>ScaleAddAssUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[SLC_ARRAY_SIZE(<VTYPE>_SRC0)];
+    do
+    {
+        SLC_<VTYPE>Copy(dst, 1, <VTYPE>_SRC0, 1, <VTYPE>_ARRAY_SIZE);
+        SLCBLAS_<VTYPE>ScaleAddAss(dst, <VTYPE>_SRC1, &<VTYPE>_SCALE1,
+            <VTYPE>_ARRAY_SIZE);
+        for (SLC_<ITYPE>_t i = 0; i < <VTYPE>_ARRAY_SIZE; i++)
+        {
+            if (!SLC_<VTYPE>_ARE_EQUAL(dst[i],
+                <VTYPE>_SRC0_PLUS_SCALE1_SRC1[i], SLC_<VTYPE>_STDTOL))
+            {
+                err = EXIT_FAILURE;
+                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>_SRC0_PLUS_SCALE1_SRC1", "dst", i,
+                    <VTYPE>_SRC0_PLUS_SCALE1_SRC1, dst, __FILE__,
+                    __FUNCTION__, __LINE__);
+                break;
+            }
+        }
+    }
+    while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+
+static SLC_errno_t <VTYPE>MultiplyEbeAssUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[SLC_ARRAY_SIZE(<VTYPE>_SRC0)];
+    do
+    {
+        SLC_<VTYPE>Copy(dst, 1, <VTYPE>_SRC0, 1, <VTYPE>_ARRAY_SIZE);
+        SLCBLAS_<VTYPE>MultiplyEbeAss(
+            dst, <VTYPE>_SRC1, <VTYPE>_ARRAY_SIZE);
+        for (SLC_<ITYPE>_t i = 0; i < <VTYPE>_ARRAY_SIZE; i++)
+        {
+            if (!SLC_<VTYPE>_ARE_EQUAL(dst[i],
+                <VTYPE>_SRC0_SRC1_EBE[i], SLC_<VTYPE>_STDTOL))
+            {
+                err = EXIT_FAILURE;
+                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>_SRC0_SRC1_EBE", "dst", i,
+                    <VTYPE>_SRC0_SRC1_EBE, dst, __FILE__,
+                    __FUNCTION__, __LINE__);
+                break;
+            }
+        }
+    }
+    while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+```
+## Add, Scale, ScaleAdd, MultiplyEbe
+```
+static SLC_errno_t <VTYPE>AddUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[SLC_ARRAY_SIZE(<VTYPE>_SRC0)];
+    do
+    {
+        SLCBLAS_<VTYPE>Add(
+            dst, <VTYPE>_SRC0, <VTYPE>_SRC1, <VTYPE>_ARRAY_SIZE);
+        for (SLC_<ITYPE>_t i = 0; i < <VTYPE>_ARRAY_SIZE; i++)
+        {
+            if (!SLC_<VTYPE>_ARE_EQUAL(dst[i],
+                <VTYPE>_SRC0_PLUS_SRC1[i], SLC_<VTYPE>_STDTOL))
+            {
+                err = EXIT_FAILURE;
+                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>_SRC0_PLUS_SRC1", "dst", i,
+                    <VTYPE>_SRC0_PLUS_SRC1, dst, __FILE__,
+                    __FUNCTION__, __LINE__);
+                break;
+            }        
+        }
+    }
+    while(0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+
+static SLC_errno_t <VTYPE>ScaleUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[SLC_ARRAY_SIZE(<VTYPE>_SRC0)];
+    do
+    {
+        SLCBLAS_<VTYPE>Scale(
+            dst, <VTYPE>_SRC0, &<VTYPE>_SCALE0, <VTYPE>_ARRAY_SIZE);
+        for (SLC_<ITYPE>_t i = 0; i < <VTYPE>_ARRAY_SIZE; i++)
+        {
+            if (!SLC_<VTYPE>_ARE_EQUAL(dst[i],
+                <VTYPE>_SCALE0_SRC0[i], SLC_<VTYPE>_STDTOL))
+            {
+                err = EXIT_FAILURE;
+                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>_SCALE0_SRC0", "dst", i,
+                    <VTYPE>_SCALE0_SRC0, dst, __FILE__,
+                    __FUNCTION__, __LINE__);
+                break;
+            }        
+        }
+    }
+    while(0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+
+static SLC_errno_t <VTYPE>ScaleAddUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[SLC_ARRAY_SIZE(<VTYPE>_SRC0)];
+    do
+    {
+        SLCBLAS_<VTYPE>ScaleAdd(
+            dst, <VTYPE>_SRC0, &<VTYPE>_SCALE0, <VTYPE>_SRC1,
+            &<VTYPE>_SCALE1, <VTYPE>_ARRAY_SIZE);
+        for (SLC_<ITYPE>_t i = 0; i < <VTYPE>_ARRAY_SIZE; i++)
+        {
+            if (!SLC_<VTYPE>_ARE_EQUAL(dst[i],
+                <VTYPE>_SCALE0_SRC0_PLUS_SCALE1_SRC1[i], SLC_<VTYPE>_STDTOL))
+            {
+                err = EXIT_FAILURE;
+                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>_SCALE0_SRC0_PLUS_SCALE1_SRC1", "dst", i,
+                    <VTYPE>_SCALE0_SRC0_PLUS_SCALE1_SRC1, dst, __FILE__,
+                    __FUNCTION__, __LINE__);
+                break;
+            }        
+        }
+    }
+    while(0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+
+static SLC_errno_t <VTYPE>MultiplyEbeUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[SLC_ARRAY_SIZE(<VTYPE>_SRC0)];
+    do
+    {
+        SLCBLAS_<VTYPE>MultiplyEbe(
+            dst, <VTYPE>_SRC0, <VTYPE>_SRC1, <VTYPE>_ARRAY_SIZE);
+        for (SLC_<ITYPE>_t i = 0; i < <VTYPE>_ARRAY_SIZE; i++)
+        {
+            if (!SLC_<VTYPE>_ARE_EQUAL(dst[i],
+                <VTYPE>_SRC0_SRC1_EBE[i], SLC_<VTYPE>_STDTOL))
+            {
+                err = EXIT_FAILURE;
+                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>_SRC0_SRC1_EBE", "dst", i,
+                    <VTYPE>_SRC0_SRC1_EBE, dst, __FILE__,
+                    __FUNCTION__, __LINE__);
+                break;
+            }        
+        }
+    }
+    while(0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+```
+## Copy conjugate
+```
+```
+## Inner product, product sum, sum, abs sum
+```
 ```
 ## R32 test harness
 ```
@@ -225,6 +398,18 @@ SLC_errno_t MiniBLAS_<VTYPE>UT()
         SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>AddAssUT,
             __FILE__, __FUNCTION__, __LINE__);
         SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>ScaleAssUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>ScaleAddAssUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>MultiplyEbeAssUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>AddUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>ScaleUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>ScaleAddUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>MultiplyEbeUT,
             __FILE__, __FUNCTION__, __LINE__);
     }
     while(0);
