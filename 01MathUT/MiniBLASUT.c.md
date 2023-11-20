@@ -176,7 +176,7 @@ static SLC_errno_t <VTYPE>AddAssUT()
                 SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SRC0_PLUS_SRC1", "dst", i,
                     <VTYPE>_SRC0_PLUS_SRC1, dst, __FILE__, __FUNCTION__,
                     __LINE__);
@@ -202,7 +202,7 @@ static SLC_errno_t <VTYPE>ScaleAssUT()
                 SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SCALE0_SRC0", "dst", i,
                     <VTYPE>_SCALE0_SRC0, dst, __FILE__, __FUNCTION__,
                     __LINE__);
@@ -230,7 +230,7 @@ static SLC_errno_t <VTYPE>ScaleAddAssUT()
                 <VTYPE>_SRC0_PLUS_SCALE1_SRC1[i], SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SRC0_PLUS_SCALE1_SRC1", "dst", i,
                     <VTYPE>_SRC0_PLUS_SCALE1_SRC1, dst, __FILE__,
                     __FUNCTION__, __LINE__);
@@ -258,7 +258,7 @@ static SLC_errno_t <VTYPE>MultiplyEbeAssUT()
                 <VTYPE>_SRC0_SRC1_EBE[i], SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SRC0_SRC1_EBE", "dst", i,
                     <VTYPE>_SRC0_SRC1_EBE, dst, __FILE__,
                     __FUNCTION__, __LINE__);
@@ -287,7 +287,7 @@ static SLC_errno_t <VTYPE>AddUT()
                 <VTYPE>_SRC0_PLUS_SRC1[i], SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SRC0_PLUS_SRC1", "dst", i,
                     <VTYPE>_SRC0_PLUS_SRC1, dst, __FILE__,
                     __FUNCTION__, __LINE__);
@@ -314,7 +314,7 @@ static SLC_errno_t <VTYPE>ScaleUT()
                 <VTYPE>_SCALE0_SRC0[i], SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SCALE0_SRC0", "dst", i,
                     <VTYPE>_SCALE0_SRC0, dst, __FILE__,
                     __FUNCTION__, __LINE__);
@@ -342,7 +342,7 @@ static SLC_errno_t <VTYPE>ScaleAddUT()
                 <VTYPE>_SCALE0_SRC0_PLUS_SCALE1_SRC1[i], SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SCALE0_SRC0_PLUS_SCALE1_SRC1", "dst", i,
                     <VTYPE>_SCALE0_SRC0_PLUS_SCALE1_SRC1, dst, __FILE__,
                     __FUNCTION__, __LINE__);
@@ -369,7 +369,7 @@ static SLC_errno_t <VTYPE>MultiplyEbeUT()
                 <VTYPE>_SRC0_SRC1_EBE[i], SLC_<VTYPE>_STDTOL))
             {
                 err = EXIT_FAILURE;
-                SLCLog_<VTYPE>ERR_ARRAY_MISMATCH(
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
                     err, "<VTYPE>_SRC0_SRC1_EBE", "dst", i,
                     <VTYPE>_SRC0_SRC1_EBE, dst, __FILE__,
                     __FUNCTION__, __LINE__);
@@ -384,9 +384,114 @@ static SLC_errno_t <VTYPE>MultiplyEbeUT()
 ```
 ## Copy conjugate
 ```
+static SLC_errno_t <VTYPE>CopyConjUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    SLC_<VTYPE>_t dst[SLC_ARRAY_SIZE(<VTYPE>_SRC0)];
+    do
+    {
+        SLCBLAS_<VTYPE>CopyConj
+        (dst, 1, <VTYPE>_SRC0, 1, <VTYPE>_ARRAY_SIZE);
+        for (SLC_<ITYPE>_t i = 0; i < <VTYPE>_ARRAY_SIZE; i++)
+        {
+            if (!SLC_<VTYPE>_ARE_EQUAL(dst[i],
+                <VTYPE>_CONJ_SRC0[i], SLC_<VTYPE>_STDTOL))
+            {
+                err = EXIT_FAILURE;
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>_CONJ_SRC0", "dst", i,
+                    <VTYPE>_CONJ_SRC0, dst, __FILE__,
+                    __FUNCTION__, __LINE__);
+                break;
+            }
+        }
+    }
+    while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
 ```
 ## Inner product, product sum, sum, abs sum
 ```
+static SLC_errno_t <VTYPE>InnerProductUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    do
+    {
+        SLC_<VTYPE>_t innerProduct = SLCBLAS_<VTYPE>InnerProduct(
+            <VTYPE>_SRC0, <VTYPE>_SRC1, <VTYPE>_ARRAY_SIZE);
+        if (!SLC_<VTYPE>_ARE_EQUAL(innerProduct,
+            <VTYPE>_INNER_PRODUCT_SRC0_SRC1, SLC_<VTYPE>_STDTOL))
+        {
+            err = EXIT_FAILURE;
+            SLCLog_ERR(err, "InnerProduct mismatch\n");
+            break;
+        }
+    }
+    while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+
+static SLC_errno_t <VTYPE>ProductSumUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    do
+    {
+        SLC_<VTYPE>_t productSum = SLCBLAS_<VTYPE>ProductSum(
+            <VTYPE>_SRC0, <VTYPE>_SRC1, <VTYPE>_ARRAY_SIZE);
+        if (!SLC_<VTYPE>_ARE_EQUAL(productSum,
+            <VTYPE>_PRODSUM_SRC0_SRC1, SLC_<VTYPE>_STDTOL))
+        {
+            err = EXIT_FAILURE;
+            SLCLog_ERR(err, "ProductSum mismatch\n");
+            break;
+        }
+    }
+    while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+
+static SLC_errno_t <VTYPE>SumUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    do
+    {
+        SLC_<VTYPE>_t sum = SLCBLAS_<VTYPE>Sum
+        (<VTYPE>_SRC0, <VTYPE>_ARRAY_SIZE);
+        if (!SLC_<VTYPE>_ARE_EQUAL(sum,
+            <VTYPE>_SUM_SRC0, SLC_<VTYPE>_STDTOL))
+        {
+            err = EXIT_FAILURE;
+            SLCLog_ERR(err, "Sum mismatch\n");
+            break;
+        }
+    }
+    while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
+
+static SLC_errno_t <VTYPE>AbsSumUT()
+{
+    SLC_errno_t err = EXIT_SUCCESS;
+    do
+    {
+        SLC_<VTYPE>_t absSum = SLCBLAS_<VTYPE>AbsSum
+        (<VTYPE>_SRC0, <VTYPE>_ARRAY_SIZE);
+        if (!SLC_<VTYPE>_ARE_EQUAL(absSum,
+            <VTYPE>_ABSSUM_SRC0, SLC_<VTYPE>_STDTOL))
+        {
+            err = EXIT_FAILURE;
+            SLCLog_ERR(err, "AbsSum mismatch\n");
+            break;
+        }
+    }
+    while (0);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
+    return err;
+}
 ```
 ## R32 test harness
 ```
@@ -410,6 +515,16 @@ SLC_errno_t MiniBLAS_<VTYPE>UT()
         SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>ScaleAddUT,
             __FILE__, __FUNCTION__, __LINE__);
         SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>MultiplyEbeUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>CopyConjUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>InnerProductUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>ProductSumUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>SumUT,
+            __FILE__, __FUNCTION__, __LINE__);
+        SLCTest_RUN_ERROR_BREAK(&err, <VTYPE>AbsSumUT,
             __FILE__, __FUNCTION__, __LINE__);
     }
     while(0);

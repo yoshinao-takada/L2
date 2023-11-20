@@ -247,7 +247,7 @@ Generic definitions of base number specific functions, types, etc.
 \param _func [in] source function name, usually __FUNCTION__
 \param _line [in] source line, usually __LINE__
 */
-#define SLCLog_<VTYPE>ERR_ARRAY_MISMATCH( \
+#define SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH( \
 _err, _name0, _name1, _index, _array0, _array1, _file, _func, _line) \
 if (_err && SLCLog_Sink) \
 { \
