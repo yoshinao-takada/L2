@@ -84,7 +84,7 @@ Generic definitions of base number specific functions, types, etc.
 typedef SLC_errno_t (*SLCNlsl_<VTYPE>Gvv_f)
 (
     SLC_<VTYPE>_t* y, SLC_<ITYPE>_t cy,
-    SLC_<VTYPE>_t* x, SLC_<ITYPE>_t cx,
+    const SLC_<VTYPE>_t* x, SLC_<ITYPE>_t cx,
     void* context
 );
 

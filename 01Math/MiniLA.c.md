@@ -67,19 +67,32 @@ SLC_errno_t SLCMat_InitLmsSolverMatSet(
     const SLC_I16_t unitsize = SLCMat_UNIT_SIZE(left);
     assert(SLCMat_UNIT_SIZE(right) == unitsize);
 
-    const SLC_4I16_t leftTSize = { unitsize, left->Dimensions.I16[2], left->Dimensions.I16[1], 1 };
-    const SLC_4I16_t leftTCLeftSize = { unitsize, SLCMat_COLUMNS(left), SLCMat_COLUMNS(left), 1 };
-    const SLC_4I16_t rightTSize = { unitsize, right->Dimensions.I16[2], right->Dimensions.I16[1], 1 };
+    const SLC_4I16_t leftTSize = 
+        { unitsize, left->Dimensions.I16[2], left->Dimensions.I16[1], 1 };
+    const SLC_4I16_t leftTCLeftSize = 
+        { unitsize, SLCMat_COLUMNS(left), SLCMat_COLUMNS(left), 1 };
+    const SLC_4I16_t rightTSize = 
+        { unitsize, right->Dimensions.I16[2], right->Dimensions.I16[1], 1 };
     const SLC_4I16_t leftTCRightSize = 
         { unitsize, SLCMat_COLUMNS(right), SLCMat_COLUMNS(left), 1 };
     const SLC_4I16_t workSize = 
-        { unitsize, leftTCLeftSize[1] + leftTCRightSize[1], leftTCLeftSize[2], 1 };
+        { unitsize, leftTCLeftSize[1] + leftTCRightSize[1],
+         leftTCLeftSize[2], 1 };
     workSet->leftT = SLCArray_ALLOC(leftTSize);
     workSet->leftTC = SLCArray_ALLOC(leftTSize);
     workSet->leftTCLeft = SLCArray_ALLOC(leftTCLeftSize);
     workSet->rightT = SLCArray_ALLOC(rightTSize);
     workSet->leftTCRight = SLCArray_ALLOC(leftTCRightSize);
     workSet->work = SLCArray_ALLOC(workSize);
+    SLC_errno_t err = EXIT_SUCCESS;
+    if ((workSet->leftT == NULL) || (workSet->leftTC == NULL) ||
+        (workSet->leftTCLeft == NULL) || (workSet->rightT == NULL) ||
+        (workSet->leftTCRight == NULL) || (workSet->work == NULL))
+    {
+        err = ENOMEM;
+        SLCMat_DestroyLmsSolverMatSet(workSet);
+    }
+    return err;
 }
 
 void SLCMat_DestroyLmsSolverMatSet(SLCMat_LmsSolverMatSet_pt workSet)
@@ -209,7 +222,8 @@ void SLCMat_<VTYPE>Transpose(SLCArray_pt dst, SLCArray_cpt src)
     const SLC_<VTYPE>_t* srcElements = src->Data.<VTYPE>;
     for (SLC_<ITYPE>_t  srcRow = 0; srcRow < srcRows; srcRow++)
     {
-        SLC_<VTYPE>Scatter(dstElements, dstColumns, srcElements, srcColumns);
+        SLC_<VTYPE>Scatter(
+            dstElements, dstColumns, srcElements, srcColumns);
         dstElements++;
         srcElements += srcColumns;
     }
@@ -227,7 +241,8 @@ void SLCMat_<VTYPE>TransConj(SLCArray_pt dst, SLCArray_cpt src)
     for (SLC_<ITYPE>_t  srcRow = 0; srcRow < srcRows; srcRow++)
     {
         SLC_<VTYPE>_t* dstElements = dst->Data.<VTYPE> + srcRow;
-        for (SLC_<ITYPE>_t srcColumn = 0; srcColumn < srcColumns; srcColumn++)
+        for (SLC_<ITYPE>_t srcColumn = 0; srcColumn < srcColumns;
+             srcColumn++)
         {
             *dstElements = SLC_<VTYPE>_CONJ(srcElements[srcColumn]);
             dstElements += dstColumns;
@@ -283,8 +298,9 @@ static void <VTYPE>CopyFromRightHalf(
 }
 
 // select the best pivot row
-static SLC_<ITYPE>_t <VTYPE>BestPivot(
-    SLC_<VTYPE>_t* workRowHead, SLC_<ITYPE>_t row, SLC_<ITYPE>_t workRows, SLC_<ITYPE>_t workColumns)
+static SLC_<ITYPE>_t 
+    <VTYPE>BestPivot(SLC_<VTYPE>_t* workRowHead, SLC_<ITYPE>_t row,
+    SLC_<ITYPE>_t workRows, SLC_<ITYPE>_t workColumns)
 {
     SLC_<RTYPE>_t pivotRelativeMaginitude = <RTYPE>_UNITS[2]; // = -1
     SLC_<ITYPE>_t 
@@ -295,7 +311,8 @@ static SLC_<ITYPE>_t <VTYPE>BestPivot(
         SLC_<RTYPE>_t pivotMagnitude = SLC_<VTYPE>_ABS(*workRowHead);
         SLC_<RTYPE>_t rowMagnitude = 
             SLCBLAS_<VTYPE>AbsSum(workRowHead, leftPartRemaining);
-        SLC_<RTYPE>_t pivotRelativeMaginitude2 = pivotMagnitude / rowMagnitude;
+        SLC_<RTYPE>_t pivotRelativeMaginitude2 =
+            pivotMagnitude / rowMagnitude;
 
         if ((pivotRelativeMaginitude2 < SLC_<VTYPE>_STDTOL) ||
                 // pivotRelativeMaginitude2 is too small to accept
@@ -332,7 +349,8 @@ static SLC_<ITYPE>_t <VTYPE>BestPivot(
 #define DBG_INV_PRINT_MAT(_parray, ...)
 #endif /* DEBUG_INV */
 
-SLC_errno_t SLCMat_<VTYPE>Inv(SLCArray_pt dst, SLCArray_cpt src, SLCArray_pt work)
+SLC_errno_t 
+SLCMat_<VTYPE>Inv(SLCArray_pt dst, SLCArray_cpt src, SLCArray_pt work)
 {
     const SLC_<ITYPE>_t srcRows = SLCMat_ROWS(src);
     const SLC_<ITYPE>_t workColumns = SLCMat_COLUMNS(work);
