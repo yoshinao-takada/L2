@@ -381,10 +381,10 @@ static void <VTYPE>CalcJacobian(SLCGnSolver_<VTYPE>_pt solver)
 static void <VTYPE>CalcDeltaX(SLCGnSolver_<VTYPE>_pt solver)
 {
     // negate y into negy.
-    for (SLC_<ITYPE>_t i = 0; i < solver->conf.Base.Cy; i++)
-    {
-        solver->negy->Data.<VTYPE>[i] = -solver->y->Data.<VTYPE>[i];
-    }
+    const SLC_<VTYPE>_t MINUS1 = SLC_<VTYPE>_M1;
+    SLCBLAS_<VTYPE>Scale(solver->negy->Data.<VTYPE>,
+        solver->y->Data.<VTYPE>, &MINUS1, solver->conf.Base.Cy);
+
     // solve linear equation -Y = J * deltaX
     SLC_errno_t err = SLCMat_<VTYPE>SolveOd(
         solver->deltaX, solver->j, solver->negy, &solver->wkset);
@@ -392,6 +392,10 @@ static void <VTYPE>CalcDeltaX(SLCGnSolver_<VTYPE>_pt solver)
     {
         solver->state = SLCNlsl_State_ERROR_ABORT;
     }
+
+    // apply deltaX to x
+    SLCBLAS_<VTYPE>AddAss(solver->x->Data.<VTYPE>, 
+        solver->deltaX->Data.<VTYPE>, solver->conf.Base.Cx);
 }
 
 static void <VTYPE>CalcNorm(SLCGnSolver_<VTYPE>_pt solver)

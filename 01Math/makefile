@@ -23,7 +23,7 @@ HEADERS = $(INCDIR)/SLC/MiniBLAS.h $(INCDIR)/SLC/MiniLA.h $(INCDIR)/SLC/NLSL.h \
 .PHONY	:	clean_debug
 .PHONY	:	clean_release
 
-debug	:	$(DEBUG_TARGET)
+debug	:	$(DEBUG_TARGET) $(HEADERS)
 
 $(DEBUG_TARGET)	:	$(DEBUG_OBJECTS)
 	mkdir -p $(DEBUG_BINDIR)
@@ -45,7 +45,7 @@ $(DEBUG_OBJDIR)/Geom.o	:	Geom.c $(INCDIR)/SLC/Geom.h $(INCDIR)/SLC/NLSL.h $(INCD
 	mkdir -p $(DEBUG_OBJDIR)
 	$(CC) $(DEBUG_CCFLAGS) -o $@ $<
 
-release	:	$(RELEASE_TARGET)
+release	:	$(RELEASE_TARGET) $(HEADERS)
 
 $(RELEASE_TARGET)	:	$(RELEASE_OBJECTS)
 	mkdir -p $(RELEASE_BINDIR)

@@ -693,7 +693,8 @@ void SLCMat_<VTYPE>Print(
     fprintf(out, "%s: rows=%d, columns=%d\n", header,
         mat->Dimensions.I16[2], mat->Dimensions.I16[1]);
     const SLC_<VTYPE>_t *e = mat->Data.<VTYPE>;
-    for (SLC_I16_t row = 0; row < mat->Dimensions.I16[2]; row++)
+    for (SLC_I16_t row = 0; row < mat->Dimensions.I16[2];
+        row++, e += mat->Dimensions.I16[1])
     {
         SLC_<VTYPE>_PRINTVN(out, e, mat->Dimensions.I16[1]);
     }

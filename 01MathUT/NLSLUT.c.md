@@ -225,6 +225,7 @@ static SLC_errno_t <VTYPE>SolveOdUT()
     } while (0);
     SLC_SAFE_FREE(&left);
     SLC_SAFE_FREE(&right);
+    SLC_SAFE_FREE(&xretrieved);
     SLCMat_DestroyLmsSolverMatSet(&wkset);
     SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
     return err;
@@ -269,7 +270,6 @@ static void
     {
         context->work[i] = SLCArray_ALLOC(matsize);
     }
-    <VTYPE>MatPower2And3_Init2(context);
 }
 
 static void <VTYPE>MatPower2And3_Destroy(<VTYPE>MatPower2And3_pt context)
@@ -280,8 +280,6 @@ static void <VTYPE>MatPower2And3_Destroy(<VTYPE>MatPower2And3_pt context)
     SLC_SAFE_FREE(&context->dM1dx1);
     SLC_SAFE_FREE(&context->dM1dx2);
     SLC_SAFE_FREE(&context->dM1dx3);
-    SLC_SAFE_FREE(&context->MatPow2);
-    SLC_SAFE_FREE(&context->MatPow3);
     for (SLC_<ITYPE>_t i = 0; i < SLC_ARRAY_SIZE(context->work); i++)
     {
         SLC_SAFE_FREE(&context->work[i]);
@@ -293,18 +291,19 @@ static void <VTYPE>MatPower2And3_Destroy(<VTYPE>MatPower2And3_pt context)
 static void 
 <VTYPE>MatPower2And3_InitContext(<VTYPE>MatPower2And3_pt context)
 {
+    <VTYPE>MatPower2And3_Init(context);
     const SLC_<VTYPE>_t MINUS1 = SLC_<VTYPE>_M1;
     context->C0 = <VTYPE>DiagonalOffsets[0];
     context->C1 = <VTYPE>DiagonalOffsets[1];
-    context->M1->Data.<VTYPE>[0] = <VTYPE>Mat2x2[0] + <VTYPE>DiagonalOffsets[0];
+    context->M1->Data.<VTYPE>[0] = <VTYPE>Mat2x2[0] + context->C0;
     context->M1->Data.<VTYPE>[1] = <VTYPE>Mat2x2[1];
     context->M1->Data.<VTYPE>[2] = <VTYPE>Mat2x2[2];
-    context->M1->Data.<VTYPE>[3] = <VTYPE>Mat2x2[3] + <VTYPE>DiagonalOffsets[1];
+    context->M1->Data.<VTYPE>[3] = <VTYPE>Mat2x2[3] + context->C1;
     SLCArray_t M2 = { context->M1->Dimensions, context->YOffset };
     SLCArray_t M3 = { context->M1->Dimensions, context->YOffset + 4 };
     SLCMat_<VTYPE>Multiply(&M2, context->M1, context->M1, context->work[0]);
     SLCMat_<VTYPE>Multiply(&M3, &M2, context->M1, context->work[0]);
-    SLCBLAS_<VTYPE>ScaleAss(context->YOffset, MINUS1, 8);
+    SLCBLAS_<VTYPE>ScaleAss(context->YOffset, &MINUS1, 8);
 }
 ```
 ### Objective and Jacobian: Objective function
@@ -312,22 +311,20 @@ static void
 static SLC_errno_t <VTYPE>Objective00(
     SLC_<VTYPE>_t* y, SLC_I32_t cy,
     const SLC_<VTYPE>_t* x, SLC_I32_t cx,
-    const SLC_<VTYPE>_t* params, SLC_I32_t cc,
     void* context
 ) {
     SLC_errno_t err = EXIT_SUCCESS;
     <VTYPE>MatPower2And3_pt ctx = (<VTYPE>MatPower2And3_pt)context;
-    ctx->M1->Data.<VTYPE>[0] = x[0] + params[0];
+    ctx->M1->Data.<VTYPE>[0] = x[0] + ctx->C0;
     ctx->M1->Data.<VTYPE>[1] = x[1];
     ctx->M1->Data.<VTYPE>[2] = x[2];
-    ctx->M1->Data.<VTYPE>[3] = x[3] + params[1];
+    ctx->M1->Data.<VTYPE>[3] = x[3] + ctx->C1;
     SLCArray_t M2 = { ctx->M1->Dimensions, {(void*)y} };
     SLCArray_t M3 = { ctx->M1->Dimensions, {(void*)(y + 4)} };
     do {
         SLCMat_<VTYPE>Multiply(&M2, ctx->M1, ctx->M1, ctx->work[0]);
-        memcpy(ctx->M2->Data.<VTYPE>, M2.Data.<VTYPE>, SLC_PROD3(ctx->M2->Dimensions.I16));
         SLCMat_<VTYPE>Multiply(&M3, &M2, ctx->M1, ctx->work[0]);
-        SLCBLAS_<VTYPE>AddAss(y, params + 2, cy);
+        SLCBLAS_<VTYPE>AddAss(y, ctx->YOffset, cy);
     } while (0);
     return err;
 }
@@ -346,8 +343,11 @@ static SLC_errno_t <VTYPE>Jcommon(
     // *y = M1 * dM1dx + dM1dx * M1
     SLCMat_<VTYPE>Multiply(ctx->work[0], ctx->M1, dM1dx, ctx->work[7]);
     SLCMat_<VTYPE>Multiply(ctx->work[1], dM1dx, ctx->M1, ctx->work[7]);
-    SLCBLAS_<VTYPE>Add(y, ctx->work[0]->Data.<VTYPE>, ctx->work[1]->Data.<VTYPE>, 4);
-    // work[2] = M1 * M1 * dM1dx, work[3] = M1 * dM1dx * M1, work[4] = dM1dx * M1 * M1
+    SLCBLAS_<VTYPE>Add(y, 
+        ctx->work[0]->Data.<VTYPE>, ctx->work[1]->Data.<VTYPE>, 4);
+    // work[2] = M1 * M1 * dM1dx, 
+    // work[3] = M1 * dM1dx * M1, 
+    // work[4] = dM1dx * M1 * M1
     // *(y + 4) = M1 * M1 * dM1dx + M1 * dM1dx * M1 + dM1dx * M1 * M1
     SLCMat_<VTYPE>Multiply(ctx->work[2], ctx->M1, ctx->work[0], ctx->work[7]);
     SLCMat_<VTYPE>Multiply(ctx->work[3], ctx->M1, ctx->work[1], ctx->work[7]);
@@ -410,12 +410,11 @@ SLC_errno_t <VTYPE>NLSLGNMat2x2Pow2And3UT()
     const SLC_<VTYPE>_t _0 = SLC_<VTYPE>_0, _1 = SLC_<VTYPE>_1;
     SLC_errno_t err = EXIT_SUCCESS;
     <VTYPE>MatPower2And3_t context;
-    const SLC_<ITYPE>_t cx = 4, cy = 8, cc = 10;
-    const SLC_<VTYPE>_t xIni[] = { _0, _0, _0, _0 };
+    const SLC_<ITYPE>_t cx = 4, cy = 8;
+    const SLC_<VTYPE>_t xIni[] = { _1, _0, _0, _0 };
     SLCGnSolver_<VTYPE>_pt solver = NULL;
     const SLC_<VTYPE>_t* xresult = NULL;
     do {
-        <VTYPE>MatPower2And3_Init(&context);
         solver = SLCGnSolver_<VTYPE>New(cx, cy);
         SLCGnSolver_<VTYPE>Conf_pt conf = SLCGnSolver_<VTYPE>Conf(solver);
         conf->Jacobian[0] = <VTYPE>J0;
@@ -423,39 +422,52 @@ SLC_errno_t <VTYPE>NLSLGNMat2x2Pow2And3UT()
         conf->Jacobian[2] = <VTYPE>J2;
         conf->Jacobian[3] = <VTYPE>J3;
         SLCNlsl_<VTYPE>Conf_pt confbase = &conf->Base;
-        confbase->TraceOut = NULL;
+        confbase->TraceOut = SLCLog_Sink;
         confbase->MaxIter = 20;
         memcpy(confbase->XInitial, xIni, sizeof(xIni));
-        <VTYPE>MatPower2And3_InitContext(&context, confbase->cParams);
+        <VTYPE>MatPower2And3_InitContext(&context);
+        fputs("context.YOffset = {", SLCLog_Sink);
+        for (SLC_<ITYPE>_t i = 0; i < 8; i++) 
+        {
+            if (i != 0) fputs(", ", SLCLog_Sink);
+            SLC_<VTYPE>_PRINT(SLCLog_Sink, context.YOffset[i]);
+        }
+        fputs("}\n", SLCLog_Sink);
         confbase->NormDxMax = SLC_<VTYPE>_STDTOL;
         confbase->NormYMax = SLC_<VTYPE>_STDTOL;
         confbase->Objective = <VTYPE>Objective00;
         confbase->Context = &context;
-        if (EXIT_SUCCESS != (err = SLCNLSLGNSolver<VTYPE>_Init(solver)))
+        if (EXIT_SUCCESS != (err = SLCGnSolver_<VTYPE>Init(solver)))
         {
-            SLCLog_ERR(err, "Fail in SLCNLSLGNSolver<VTYPE>_Init() @ %s,%d\n", __FILE__, __LINE__);
+            SLCLog_ERR(err, 
+                "Fail in SLCGnSolver_<VTYPE>Init() @ %s,%s,%d\n",
+                __FILE__, __FUNCTION__, __LINE__);
             break;
         }
-        if (EXIT_SUCCESS != (err = SLCNLSLGNSolver<VTYPE>_Execute(solver)))
+        if (EXIT_SUCCESS != (err = SLCGnSolver_<VTYPE>Execute(solver)))
         {
-            SLCLog_ERR(err, "Fail in SLCNLSLGNSolver<VTYPE>_Execute() @ %s,%d\n", __FILE__, __LINE__);
+            SLCLog_ERR(err,
+                "Fail in SLCGnSolver_<VTYPE>Execute() @ %s,%s,%d\n", 
+                __FILE__, __FUNCTION__, __LINE__);
             break;
         }
         // check x tolerances
-        xresult = SLCNLSLGNSolver<VTYPE>_X(solver);
+        xresult = SLCGnSolver_<VTYPE>X(solver);
         for (SLC_<ITYPE>_t i = 0; i < cx; i++)
         {
-            if (!SLC<VTYPE>_areequal(<VTYPE>Mat2x2[i], xresult[i], SLC_<VTYPE>_STDTOL))
+            if (!SLC_<VTYPE>_ARE_EQUAL(<VTYPE>Mat2x2[i], xresult[i], SLC_<VTYPE>_STDTOL))
             {
                 err = SLC_EVALMISMATCH;
-                SLCLog<VTYPE>_ERR(err, "<VTYPE>Mat2x2", "xresult", i, <VTYPE>Mat2x2, xresult);
+                SLCLog_<VTYPE>_ERR_ARRAY_MISMATCH(
+                    err, "<VTYPE>Mat2x2", "xresult", i, <VTYPE>Mat2x2,
+                    xresult, __FILE__, __FUNCTION__, __LINE__);
                 break;
             }
         }
     } while (0);
-    SLCNLSLGNSolver<VTYPE>_Delete(&solver);
+    SLCGnSolver_<VTYPE>Delete(&solver);
     <VTYPE>MatPower2And3_Destroy(&context);
-    SLC_testend(err, __FUNCTION__, __LINE__);
+    SLCTest_END(err, __FILE__, __FUNCTION__, __LINE__);
     return err;
 }
 ```
