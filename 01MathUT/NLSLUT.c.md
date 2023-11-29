@@ -61,7 +61,7 @@ static const SLC_I32_t XPOINT_COUNT = 20;
 #pragma region R32_TEST_DATA
 static const SLC_4R32_t R32PolyCoeff = { 0.5f, -1.0f, -0.3f, 0.1f };
 static const SLC_R32_t
-    R32XBegin0 = -2.0f, R32XBegin1 = -2.2f,
+    R32XBegin0 = -2.0f, R32XBegin1 = -4.5f,
     R32XStep0 = 0.15f, R32XStep1 = 0.33f;
 static const SLC_R32_t* R32Mat2x2 = R32PolyCoeff;
 static const SLC_2R32_t R32DiagonalOffsets = { 0.2f, -0.3f };
@@ -72,7 +72,7 @@ static const SLC_2R32_t R32DiagonalOffsets = { 0.2f, -0.3f };
 #pragma region R64_TEST_DATA
 static const SLC_4R64_t R64PolyCoeff = { 0.5, -1.0, -0.3, 0.1 };
 static const SLC_R64_t
-    R64XBegin0 = -2.0, R64XBegin1 = -2.2,
+    R64XBegin0 = -2.0, R64XBegin1 = -4.5,
     R64XStep0 = 0.15, R64XStep1 = 0.33;
 static const SLC_R64_t* R64Mat2x2 = R64PolyCoeff;
 static const SLC_2R64_t R64DiagonalOffsets = { 0.2, -0.3 };
@@ -238,7 +238,7 @@ Details of the problem are described in [NLSL Sample 0](NLSLSample0.md).
 ```
 #pragma region <VTYPE>_Objective_and_Jacobian
 typedef struct <VTYPE>MatPower2And3 {
-    SLCArray_pt M1, M2, dM1dx0, dM1dx1, dM1dx2, dM1dx3;
+    SLCArray_pt M1, dM1dx0, dM1dx1, dM1dx2, dM1dx3;
     SLCArray_pt work[8];
     SLC_<VTYPE>_t C0, C1;
     SLC_<VTYPE>_t YOffset[8];
@@ -251,7 +251,6 @@ static void
     SLC_4I16_t matsize = { NUMSIZE, 2, 2, 1 };
     SLC_<VTYPE>_t _0 = SLC_<VTYPE>_0;
     context->M1 = SLCArray_ALLOC(matsize);
-    context->M2 = SLCArray_ALLOC(matsize);
     context->dM1dx0 = SLCArray_ALLOC(matsize);
     context->dM1dx1 = SLCArray_ALLOC(matsize);
     context->dM1dx2 = SLCArray_ALLOC(matsize);
@@ -275,7 +274,6 @@ static void
 static void <VTYPE>MatPower2And3_Destroy(<VTYPE>MatPower2And3_pt context)
 {
     SLC_SAFE_FREE(&context->M1);
-    SLC_SAFE_FREE(&context->M2);
     SLC_SAFE_FREE(&context->dM1dx0);
     SLC_SAFE_FREE(&context->dM1dx1);
     SLC_SAFE_FREE(&context->dM1dx2);
@@ -411,7 +409,7 @@ SLC_errno_t <VTYPE>NLSLGNMat2x2Pow2And3UT()
     SLC_errno_t err = EXIT_SUCCESS;
     <VTYPE>MatPower2And3_t context;
     const SLC_<ITYPE>_t cx = 4, cy = 8;
-    const SLC_<VTYPE>_t xIni[] = { _1, _0, _0, _0 };
+    const SLC_<VTYPE>_t xIni[] = { _1, -_1, _0, _0 };
     SLCGnSolver_<VTYPE>_pt solver = NULL;
     const SLC_<VTYPE>_t* xresult = NULL;
     do {
@@ -422,17 +420,10 @@ SLC_errno_t <VTYPE>NLSLGNMat2x2Pow2And3UT()
         conf->Jacobian[2] = <VTYPE>J2;
         conf->Jacobian[3] = <VTYPE>J3;
         SLCNlsl_<VTYPE>Conf_pt confbase = &conf->Base;
-        confbase->TraceOut = SLCLog_Sink;
+        confbase->TraceOut = NULL;
         confbase->MaxIter = 20;
         memcpy(confbase->XInitial, xIni, sizeof(xIni));
         <VTYPE>MatPower2And3_InitContext(&context);
-        fputs("context.YOffset = {", SLCLog_Sink);
-        for (SLC_<ITYPE>_t i = 0; i < 8; i++) 
-        {
-            if (i != 0) fputs(", ", SLCLog_Sink);
-            SLC_<VTYPE>_PRINT(SLCLog_Sink, context.YOffset[i]);
-        }
-        fputs("}\n", SLCLog_Sink);
         confbase->NormDxMax = SLC_<VTYPE>_STDTOL;
         confbase->NormYMax = SLC_<VTYPE>_STDTOL;
         confbase->Objective = <VTYPE>Objective00;

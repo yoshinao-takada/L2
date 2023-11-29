@@ -607,7 +607,6 @@ SLC_errno_t SLCMat_<VTYPE>Solve(SLCArray_pt dst,
                     workRowHead + (pivotRow - row) * workColumns, 1,
                     work_row_length);
             }
-
             DBG_SOLVE_PRINT_MAT(work, "Before normalizing pivot row -- ");
             // normalize the pivot row
             SLC_<VTYPE>_t scale = <VTYPE>_UNITS[1] / *workRowHead;
