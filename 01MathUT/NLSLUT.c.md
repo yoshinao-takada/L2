@@ -142,7 +142,8 @@ static void <VTYPE>PolyFit_CreateTestRHS(SLCArray_pt rhs)
     }
 }
 
-static void <VTYPE>PolyFit_CreateXPowers(SLC_<VTYPE>_t* XpowN, SLC_<VTYPE>_t x)
+static void 
+<VTYPE>PolyFit_CreateXPowers(SLC_<VTYPE>_t* XpowN, SLC_<VTYPE>_t x)
 {
     XpowN[0] = SLC_<VTYPE>_1;
     XpowN[1] = XpowN[0] * x;
@@ -217,8 +218,12 @@ static SLC_errno_t <VTYPE>SolveOdUT()
             {
                 err = SLC_EVALMISMATCH;
                 SLCLog_ERR(err, 
-                    "Value mismatch, <VTYPE>PolyCoeff[%d]=%f, xretrieved[%d]=%f @ %s,%s,%d\n",
-                    i, <VTYPE>PolyCoeff[i], i, xretrieved->Data.<VTYPE>[i], __FILE__, __FUNCTION__, __LINE__);
+                    "Value mismatch, <VTYPE>PolyCoeff[%d]=%f,"
+                    " xretrieved[%d]=%f"
+                    " @ %s,%s,%d\n",
+                    i, <VTYPE>PolyCoeff[i],
+                    i, xretrieved->Data.<VTYPE>[i],
+                    __FILE__, __FUNCTION__, __LINE__);
                 break;
             }
         }
@@ -407,6 +412,7 @@ SLC_errno_t <VTYPE>NLSLGNMat2x2Pow2And3UT()
 {
     const SLC_<VTYPE>_t _0 = SLC_<VTYPE>_0, _1 = SLC_<VTYPE>_1;
     SLC_errno_t err = EXIT_SUCCESS;
+    // Common context of the objective and the Jacobian
     <VTYPE>MatPower2And3_t context;
     const SLC_<ITYPE>_t cx = 4, cy = 8;
     const SLC_<VTYPE>_t xIni[] = { _1, -_1, _0, _0 };
