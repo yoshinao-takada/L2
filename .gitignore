@@ -3,5 +3,7 @@ c.err
 */c.err
 .vscode/
 include/
-*/*.c
+0*/*.c
+5*/*.o
+5*/*.exe
 access-token.txt
